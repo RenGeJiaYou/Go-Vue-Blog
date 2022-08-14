@@ -19,7 +19,6 @@ func InitRouter() {
 		router.GET("users", v1.GetUsers)
 		router.PUT("user/:id", v1.EditUser)
 		router.DELETE("user/:id", v1.DeleteUser)
-		router.GET()
 		//article 的路由接口
 
 		//category 的路由接口
