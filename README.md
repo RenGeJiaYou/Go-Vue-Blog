@@ -1,7 +1,7 @@
 # Go-Vue-Blog
 A Blog System Project base on Go (backend) and Vue.js ( frontend )  
 
-一个基于 Go 的 Gin、GORM 和 JS 的 Vue 2、Ant Design Vue 的全栈在线博客项目。旨在快速熟悉 Go 的工程化事件及相关技术栈的理解和运用。
+一个基于 Go 的 Gin、GORM 和 JS 的 Vue 2、Ant Design Vue 的全栈在线博客项目。旨在快速熟悉 Go 的工程化实践及相关技术栈的理解和运用。
 
 ### 一、项目结构说明
 

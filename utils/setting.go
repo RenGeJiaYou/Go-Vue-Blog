@@ -1,5 +1,6 @@
 package utils
 
+//抓取 ini 文件中的配置项
 import (
 	"fmt"
 	"gopkg.in/ini.v1"
