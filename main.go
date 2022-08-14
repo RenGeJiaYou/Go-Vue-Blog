@@ -1,7 +1,11 @@
 package main
 
-import "go-vue-blog/routers"
+import (
+	"go-vue-blog/model"
+	"go-vue-blog/routers"
+)
 
-func main()  {
+func main() {
+	model.InitDB()
 	routers.InitRouter()
 }

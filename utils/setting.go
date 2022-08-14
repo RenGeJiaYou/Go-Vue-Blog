@@ -26,13 +26,13 @@ func init() {
 	LoadData(file)
 }
 
-//加载 [server] 配置文件
+// 加载 [server] 配置文件
 func LoadServer(file *ini.File) {
 	AppMode = file.Section("server").Key("AppMode").String()
 	HttpPort = file.Section("server").Key("HttpPort").String()
 }
 
-//加载 [database] 配置文件
+// 加载 [database] 配置文件
 func LoadData(file *ini.File) {
 	Db = file.Section("database").Key("Db").String()
 	DbHost = file.Section("database").Key("DbHost").String()

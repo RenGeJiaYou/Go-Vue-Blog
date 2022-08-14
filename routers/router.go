@@ -1,12 +1,13 @@
 package routers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-vue-blog/utils"
 	"net/http"
 )
 
-//router 入口文件
+// InitRouter router 入口文件
 func InitRouter() {
 	gin.SetMode(utils.AppMode)
 	r := gin.Default()
@@ -20,5 +21,8 @@ func InitRouter() {
 		})
 	}
 
-	r.Run(utils.HttpPort)
+	err := r.Run(utils.HttpPort)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
