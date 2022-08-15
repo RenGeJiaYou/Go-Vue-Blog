@@ -59,8 +59,35 @@ func GetUsers(c *gin.Context) {
 
 // EditUser 编辑用户
 func EditUser(c *gin.Context) {
+	//id, _ := strconv.Atoi(c.Param("id"))
 
+	var user model.User
+	c.ShouldBindJSON(&user)
+	code := model.CheckUser(user.Username)
+
+	if code == errmsg.SUCCESS {
+		model.EditUser(&user) //实际上只能改 username 和 role
+	}
+	if code == errmsg.ERROR_USERNAME_USED {
+		// 若重名，不再调用后续的函数处理
+		fmt.Println("ERROR_USERNAME_USED")
+		c.Abort()
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": code,
+		"msg":    errmsg.GetErrMsg(code),
+	})
 }
 
 // DeleteUser 删除用户
-func DeleteUser(c *gin.Context) {}
+func DeleteUser(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	code := model.DeleteUser(id)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": code,
+		"msg":    errmsg.GetErrMsg(code),
+		"delete": "i am delete",
+	})
+}

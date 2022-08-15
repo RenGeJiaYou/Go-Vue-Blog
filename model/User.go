@@ -89,3 +89,35 @@ func (u *User) BeforeSave(_ *gorm.DB) error {
 	u.Password = ScryptPw(u.Password)
 	return nil
 }
+
+// EditUser 修改用户
+func EditUser(user *User) int {
+	//使用map方式,因为 struct 无法更新零值
+	var maps = make(map[string]interface{})
+	maps["username"] = user.Username
+	maps["role"] = user.Role
+
+	err := db.
+		Model(&user).
+		Updates(maps).
+		Where("id = ?", user.ID).Error
+	if err != nil {
+		return errmsg.ERROR
+	}
+	return errmsg.SUCCESS
+}
+
+// DeleteUser 删除用户 不必考虑判空，因为前端一定是在一个条目上删除，不可能空。
+// Param id int			用户ID
+// Return code int		状态码
+func DeleteUser(id int) int {
+	var user User
+	err := db.
+		Where("id = ?", id).
+		Delete(&user).
+		Error
+	if err != nil {
+		return errmsg.ERROR
+	}
+	return errmsg.SUCCESS
+}
