@@ -1,8 +1,10 @@
 package model
 
 import (
+	"encoding/base64"
 	"fmt"
 	"go-vue-blog/utils/errmsg"
+	"golang.org/x/crypto/scrypt"
 	"gorm.io/gorm"
 )
 
@@ -46,6 +48,11 @@ func CreateUser(user *User) int { // Go 的 struct 是引用类型，作为参�
 
 }
 
+// GetUsers 获取用户列表
+// Params pageSize int	一页的数量
+// Params pageNum int	当前的页码
+// Return []User		用户列表
+// Return int64			用户数量
 func GetUsers(pageSize int, pageNum int) ([]User, int64) {
 	var users []User
 	var total int64
@@ -60,4 +67,25 @@ func GetUsers(pageSize int, pageNum int) ([]User, int64) {
 	}
 	return users, total
 
+}
+
+// ScryptPw 在存入数据库前对用户密码加密，将被 一个钩子函数调用
+// Param password string	用户原始密码
+// Return hash string
+func ScryptPw(password string) string {
+	const keyLen = 16
+	salt := []byte{53, 234, 5, 64, 23, 97, 34, 4, 77, 31, 56, 92}
+
+	HashPw, err := scrypt.Key([]byte(password), salt, 1<<12, 18, 1, keyLen)
+	if err != nil {
+		fmt.Println("对明文密码加密出错：", err)
+	}
+	//base64 提供 bit -> 字节 的转换
+	return base64.StdEncoding.EncodeToString(HashPw)
+}
+
+// BeforeSave 钩子函数，在数据存入数据库前哈希密码
+func (u *User) BeforeSave(_ *gorm.DB) error {
+	u.Password = ScryptPw(u.Password)
+	return nil
 }
