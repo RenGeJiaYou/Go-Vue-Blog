@@ -59,14 +59,14 @@ func GetUsers(c *gin.Context) {
 
 // EditUser 编辑用户
 func EditUser(c *gin.Context) {
-	//id, _ := strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("id"))
 
 	var user model.User
 	c.ShouldBindJSON(&user)
 	code := model.CheckUser(user.Username)
 
 	if code == errmsg.SUCCESS {
-		model.EditUser(&user) //实际上只能改 username 和 role
+		model.EditUser(&user,id) //实际上只能改 username 和 role
 	}
 	if code == errmsg.ERROR_USERNAME_USED {
 		// 若重名，不再调用后续的函数处理

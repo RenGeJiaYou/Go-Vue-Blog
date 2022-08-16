@@ -22,6 +22,11 @@ func InitRouter() {
 		//article 的路由接口
 
 		//category 的路由接口
+		router.POST("category/add", v1.AddCategory)
+		router.GET("categories", v1.GetCategories)
+		router.PUT("category/:id", v1.EditCategory)
+		router.DELETE("category/:id", v1.DeleteCate)
+
 	}
 
 	err := r.Run(utils.HttpPort)
