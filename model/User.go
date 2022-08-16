@@ -45,7 +45,6 @@ func CreateUser(user *User) int { // Go 的 struct 是引用类型，作为参�
 		return errmsg.ERROR
 	}
 	return errmsg.SUCCESS
-
 }
 
 // GetUsers 获取用户列表
@@ -66,7 +65,6 @@ func GetUsers(pageSize int, pageNum int) ([]User, int64) {
 		return nil, 0
 	}
 	return users, total
-
 }
 
 // EditUser 修改用户

@@ -19,7 +19,12 @@ func InitRouter() {
 		router.GET("users", v1.GetUsers)
 		router.PUT("user/:id", v1.EditUser)
 		router.DELETE("user/:id", v1.DeleteUser)
+
 		//article 的路由接口
+		router.POST("article/add", v1.AddArt)
+		router.GET("articles", v1.GetArts)
+		router.PUT("article/:id", v1.EditArt)
+		router.DELETE("article/:id", v1.DeleteArt)
 
 		//category 的路由接口
 		router.POST("category/add", v1.AddCategory)
