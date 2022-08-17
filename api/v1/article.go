@@ -27,9 +27,41 @@ func AddArt(c *gin.Context) {
 
 }
 
-// todo 查询某个分类下所有文章
+// GetCateArt todo 查询某个分类下所有文章
+func GetCateArt(c *gin.Context) {
+	//从请求报文的 params 提取数据
+	cid, _ := strconv.Atoi(c.Param("cid"))			// 巩固Param() 和 Query() 的区别
+	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
+	pageNum, _ := strconv.Atoi(c.Query("pagenum"))
+	fmt.Println(cid, pageSize, pageNum)
+	if pageSize == 0 {
+		pageSize = -1 //GORM 的Limit(-1) 表示不要 Limit() 这个限制
+	}
+	if pageNum == 0 {
+		pageNum = 1 //GORM 的Offset((1-1)*pageSize) 表示不要 Offset() 这个限制
+	}
+	// 调用 Model 层
+	arts, code, total := model.GetCateArt(cid, pageSize, pageNum)
+	//返回数据
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"data":    arts,
+		"total":   total,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
 
-//查询单个文章 todo 按标题查
+// GetArt 查询单个文章 todo 按标题查
+func GetArt(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	art, code := model.GetArt(id)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"data":    art,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
 
 // GetArts 查询文章列表
 func GetArts(c *gin.Context) {
@@ -45,14 +77,14 @@ func GetArts(c *gin.Context) {
 	}
 
 	//查询数据库
-	arts, total := model.GetArts(pageSize, pageNum)
+	arts, code, total := model.GetArts(pageSize, pageNum)
 
 	//返回数据
 	c.JSON(http.StatusOK, gin.H{
-		"status":  errmsg.SUCCESS,
+		"status":  code,
 		"data":    arts,
 		"total":   total,
-		"message": errmsg.GetErrMsg(errmsg.SUCCESS),
+		"message": errmsg.GetErrMsg(code),
 	})
 }
 

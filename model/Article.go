@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// ORM 中，总要将 Where() 放在 Find()/First() 前。否则将因为过早查询而略过了条件
+
 type Article struct {
 	gorm.Model
 	Title    string   `gorm:"type:varchar(100);not null" json:"title"`
@@ -26,28 +28,65 @@ func CreateArt(art *Article) int {
 	return errmsg.SUCCESS
 }
 
-// todo 查询某个分类下所有文章
+// GetCateArt todo 查询某个分类下所有文章
+func GetCateArt(cid int, pageSize int, pageNum int) ([]Article, int, int64) {
+	var cateArt []Article
+	var total int64
+	err := db.
+		Preload("Category").
+		Limit(pageSize).
+		Offset((pageNum-1)*pageSize).
+		Where("cid = ?", cid).
+		Find(&cateArt).
+		Error
 
-// GetArt todo 获取单篇文章
-func GetArt() {
+	//记录总数。Model() 不仅仅能传已经定义好的go struct 对象，也包括某次查询的视图
+	db.
+		Model(&cateArt).
+		Where("cid =?", cid).
+		Count(&total)
+
+	if err != nil {
+		return nil, errmsg.ERROR_CATE_NOT_EXIST, 0
+	}
+	return cateArt, errmsg.SUCCESS, total
+
+}
+
+// GetArt  获取单篇文章
+func GetArt(id int) (Article, int) {
+	var art Article
+
+	//Where() 应该在 Find() 前。否则将先进行查询，而 Where() 条件未能起作用
+	err := db.
+		Preload("Category"). //若不预加载 Category ，返回的Article 的 Category 数据子项将是空值
+		Where("id = ?", id).
+		Find(&art).
+		Error
+	if err != nil {
+		fmt.Println("获取单篇文章 在 ORM 阶段失败")
+		return art, errmsg.ERROR_ART_NOT_EXIST
+	}
+	return art, errmsg.SUCCESS
 
 }
 
 // GetArts 获取文章列表
-func GetArts(pageSize int, pageNum int) ([]Article, int64) {
+func GetArts(pageSize int, pageNum int) ([]Article, int, int64) {
 	var articles []Article
 	var total int64
 
 	err := db.
+		Preload("Category").
 		Find(&articles).
 		Count(&total).
 		Limit(pageSize).
 		Offset((pageNum - 1) * pageSize).Error
 	if err != nil {
 		fmt.Println("查找用户列表失败： ", err)
-		return nil, 0
+		return nil, errmsg.ERROR_ART_NOT_EXIST, 0
 	}
-	return articles, total
+	return articles, errmsg.SUCCESS, total
 }
 
 // EditArt 编辑文章
