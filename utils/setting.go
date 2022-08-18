@@ -9,6 +9,7 @@ import (
 var (
 	AppMode  string
 	HttpPort string
+	JwtKey   string
 
 	DbName     string
 	DbPassWord string
@@ -31,6 +32,7 @@ func init() {
 func LoadServer(file *ini.File) {
 	AppMode = file.Section("server").Key("AppMode").String()
 	HttpPort = file.Section("server").Key("HttpPort").String()
+	JwtKey = file.Section("server").Key("JwtKey").String()
 }
 
 // 加载 [database] 配置文件
