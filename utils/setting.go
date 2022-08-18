@@ -17,6 +17,11 @@ var (
 	DbPort     string
 	DbHost     string
 	Db         string
+
+	AccessKey   string
+	SecretKey   string
+	Bucket      string
+	QiniuServer string
 )
 
 func init() {
@@ -26,16 +31,17 @@ func init() {
 	}
 	LoadServer(file)
 	LoadData(file)
+	LoadQiniu(file)
 }
 
-// 加载 [server] 配置文件
+// LoadServer 加载 [server] 配置文件
 func LoadServer(file *ini.File) {
 	AppMode = file.Section("server").Key("AppMode").String()
 	HttpPort = file.Section("server").Key("HttpPort").String()
 	JwtKey = file.Section("server").Key("JwtKey").String()
 }
 
-// 加载 [database] 配置文件
+// LoadData 加载 [database] 配置文件
 func LoadData(file *ini.File) {
 	Db = file.Section("database").Key("Db").String()
 	DbHost = file.Section("database").Key("DbHost").String()
@@ -43,4 +49,13 @@ func LoadData(file *ini.File) {
 	DbUser = file.Section("database").Key("DbUser").String()
 	DbPassWord = file.Section("database").Key("DbPassWord").String()
 	DbName = file.Section("database").Key("DbName").String()
+}
+
+// LoadQiniu  加载[qiniu] 配置文件
+func LoadQiniu(file *ini.File) {
+	AccessKey = file.Section("qiniu").Key("AccessKey").String()
+	SecretKey = file.Section("qiniu").Key("SecretKey").String()
+	Bucket = file.Section("qiniu").Key("Bucket").String()
+	QiniuServer = file.Section("qiniu").Key("QiniuServer").String()
+
 }
