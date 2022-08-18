@@ -11,7 +11,7 @@ import (
 type User struct {
 	gorm.Model
 	Username string `gorm:"type:varchar(20);not null" json:"username"`
-	Password string `gorm:"type:varchar(20);not null" json:"password"`
+	Password string `gorm:"type:varchar(100);not null" json:"password"`
 	Role     int    `gorm:"type:int" json:"role"`
 }
 
@@ -119,4 +119,25 @@ func ScryptPw(password string) string {
 func (u *User) BeforeSave(_ *gorm.DB) error {
 	u.Password = ScryptPw(u.Password)
 	return nil
+}
+
+// CheckLogin 登陆验证
+func CheckLogin(username, password string) int {
+	var user User
+
+	tx := db.
+		Where("username = ?", username).
+		First(&user)
+
+	if tx.RowsAffected == 0 { /* if user.ID == 0 */
+		return errmsg.ERROR_USER_NOT_EXIST
+	}
+	if ScryptPw(password) != user.Password {
+		return errmsg.ERROR_PASSWORD_WRONG
+	}
+	if user.Role != 0 {
+		return errmsg.ERROR_USER_NO_RIGHT
+	}
+
+	return errmsg.SUCCESS
 }

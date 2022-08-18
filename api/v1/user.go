@@ -66,7 +66,7 @@ func EditUser(c *gin.Context) {
 	code := model.CheckUser(user.Username)
 
 	if code == errmsg.SUCCESS {
-		model.EditUser(&user,id) //实际上只能改 username 和 role
+		model.EditUser(&user, id) //实际上只能改 username 和 role
 	}
 	if code == errmsg.ERROR_USERNAME_USED {
 		// 若重名，不再调用后续的函数处理
@@ -91,3 +91,4 @@ func DeleteUser(c *gin.Context) {
 		"delete": "i am delete",
 	})
 }
+
