@@ -11,8 +11,10 @@ import (
 // InitRouter router 入口文件
 func InitRouter() {
 	gin.SetMode(utils.AppMode)
+
 	r := gin.New()
 	r.Use(gin.Recovery())
+	r.Use(middleware.Logger())
 
 	auth := r.Group("api/v1")
 	auth.Use(middleware.JwtToken())
