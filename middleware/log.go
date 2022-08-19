@@ -9,7 +9,16 @@ import (
 )
 
 func Logger() gin.HandlerFunc {
+	filePath := "log/govueblog.log"
+
+	//打开指定处的文件，并指定权限为：可读可写，可创建
+	src, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0755) //0755-> rwx r-x r-x linux知识
+	if err != nil {
+		fmt.Println("err:", err)
+	}
+
 	log := logrus.New()
+	log.Out = src
 	return func(c *gin.Context) {
 		// 一.配置所需的 Fields
 		startTime := time.Now()
