@@ -7,6 +7,10 @@
 *.ini
 .idea/
 config/
+
+# Log directory
+log/
+
 # Test binary, built with `go test -c`
 *.test
 

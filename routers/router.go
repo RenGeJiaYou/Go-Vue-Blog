@@ -11,7 +11,8 @@ import (
 // InitRouter router 入口文件
 func InitRouter() {
 	gin.SetMode(utils.AppMode)
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Recovery())
 
 	auth := r.Group("api/v1")
 	auth.Use(middleware.JwtToken())
@@ -31,7 +32,7 @@ func InitRouter() {
 		auth.DELETE("category/:id", v1.DeleteCate)
 
 		//文件上传的路由接口
-		auth.POST("upload",v1.Upload)
+		auth.POST("upload", v1.Upload)
 	}
 
 	router := r.Group("api/v1")
