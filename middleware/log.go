@@ -29,7 +29,7 @@ func Logger() gin.HandlerFunc {
 	// 设置日志切割 rotatelogs
 	writer, _ := rotatelogs.New(
 		filePath+"%Y%m%d.log",
-		//在项目根目录下生成软链文件 latest_log.log 指向最新的日志文件。注意：必须在管理员权限下开终端启动。
+		//在项目根目录下生成软链文件 latest_log.log 指向最新的日志文件。注意！！！必须在管理员权限下开终端启动。
 		rotatelogs.WithLinkName(linkName),
 		//日志最大保存时间
 		rotatelogs.WithMaxAge(7*24*time.Hour),

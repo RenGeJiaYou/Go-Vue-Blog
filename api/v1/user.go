@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-vue-blog/model"
 	"go-vue-blog/utils/errmsg"
+	"go-vue-blog/utils/validator"
 	"net/http"
 	"strconv"
 )
@@ -14,6 +15,16 @@ func AddUser(c *gin.Context) {
 	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		fmt.Println("AddUser() 绑定 JSON 出错：", err)
+	}
+
+	msg, errCode := validator.Validator(&user)
+	if errCode != errmsg.SUCCESS {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  errCode,
+			"data":    msg,
+			"message": errmsg.GetErrMsg(errCode),
+		})
+		return
 	}
 	//检查重名
 	code := model.CheckUser(user.Username)
@@ -91,4 +102,3 @@ func DeleteUser(c *gin.Context) {
 		"delete": "i am delete",
 	})
 }
-
