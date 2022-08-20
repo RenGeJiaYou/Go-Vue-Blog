@@ -3,22 +3,56 @@ package middleware
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
 	"os"
 	"time"
 )
 
 func Logger() gin.HandlerFunc {
-	filePath := "log/govueblog.log"
+	log := logrus.New()
 
-	//打开指定处的文件，并指定权限为：可读可写，可创建
+	// 设置输出文件
+	filePath := "log/"
+	// 		打开指定处的文件，并指定权限为：可读可写，可创建
 	src, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0755) //0755-> rwx r-x r-x linux知识
 	if err != nil {
 		fmt.Println("err:", err)
 	}
-
-	log := logrus.New()
 	log.Out = src
+
+	// 设置日志级别。低于 Debug 级别的 Trace 将不会被打印
+	log.SetLevel(logrus.DebugLevel)
+
+	// 设置日志切割 rotatelogs
+	writer, _ := rotatelogs.New(
+		filePath+"%Y%m%d.log",
+
+		//日志最大保存时间
+		rotatelogs.WithMaxAge(7*24*time.Hour),
+		////设置日志切割时间间隔(1天)(隔多久分割一次)
+		rotatelogs.WithRotationTime(24*time.Hour),
+	)
+
+	// lfshook 决定哪些日志级别可用日志分割
+	writeMap := lfshook.WriterMap{
+		logrus.PanicLevel: writer,
+		logrus.FatalLevel: writer,
+		logrus.ErrorLevel: writer,
+		logrus.WarnLevel:  writer,
+		logrus.InfoLevel:  writer,
+		logrus.DebugLevel: writer,
+	}
+
+	// 配置 lfshook
+	hook := lfshook.NewHook(writeMap, &logrus.TextFormatter{
+		// 设置日期格式
+		TimestampFormat: "2006.01.02 - 15:04:05",
+	})
+
+	//为 logrus 实例添加自定义 hook
+	log.AddHook(hook)
 	return func(c *gin.Context) {
 		// 一.配置所需的 Fields
 		startTime := time.Now()
