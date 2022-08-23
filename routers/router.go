@@ -10,6 +10,7 @@ import (
 
 // InitRouter router 入口文件
 func InitRouter() {
+	//先设置setMode(),再创建 gin.New() 才能正确运行配置
 	gin.SetMode(utils.AppMode)
 
 	r := gin.New()
