@@ -21,3 +21,13 @@ log/
 # vendor/
 
 *.log
+
+web/admin/.yarn/cache/
+
+web/admin/.yarn/
+
+web/admin/.editorconfig
+
+web/admin/.browserslistrc
+
+web/admin/.eslintrc.js
