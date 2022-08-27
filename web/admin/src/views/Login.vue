@@ -2,6 +2,7 @@
   <div class="container">
     <div class="loginBox">
       <a-form-model
+        ref="loginFormRef"
         class="loginForm"
         :model="formData"
         :rules="rules"
@@ -20,15 +21,6 @@
               type="user"
               style="color: rgba(0,0,0,.45)"
             />
-            <a-tooltip
-              slot="suffix"
-              title="用户名包括英文，数字和下划线"
-            >
-              <a-icon
-                type="info-circle"
-                style="color: rgba(0,0,0,.45)"
-              />
-            </a-tooltip>
           </a-input>
         </a-form-model-item>
 
@@ -53,8 +45,12 @@
           <a-button
             type="primary"
             style="margin-right:20px"
+            @click="submitForm('loginFormRef')"
           >登录</a-button>
-          <a-button type="info">取消</a-button>
+          <a-button
+            type="info"
+            @click="resetForm('loginFormRef')"
+          >取消</a-button>
         </a-form-model-item>
       </a-form-model>
     </div>
@@ -62,6 +58,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -69,7 +66,6 @@ export default {
       formData: {
         username: "",
         password: "",
-        role: "",
       },
 
       //表单验证
@@ -102,6 +98,41 @@ export default {
         ],
       },
     };
+  },
+  methods: {
+    //传入的 formName 是表单的引用名
+    //提交按钮
+    submitForm(formName) {
+      //rules 的校验是不够的，它只是在前端提示用户。必须有提交前的验证。否则将把错误的数据提交到后端
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          try {
+            //单独提取返回的对象中的data字段，赋给 res
+            const { data: res } = await this.$axios.post(
+              "/login",
+              this.formData
+            );
+            if (res.status != 200) {
+              return this.$message.error(res.message);
+            } else {
+              //将token 放到本地存储.session 在关闭浏览器后将清空token
+              // window.sessionStorage.setItem("token", res.token);
+              window.localStorage.setItem("token", res.token);
+              this.$router.push("/admin");
+            }
+          } catch (err) {
+            console.log(err);
+          }
+        } else {
+          this.$message.error("提交的账户信息有误！"); //报错message
+          this.$refs[formName].resetFields(); //重置表单
+        }
+      });
+    },
+    //重置按钮
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    },
   },
 };
 </script>
