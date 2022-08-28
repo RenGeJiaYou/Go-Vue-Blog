@@ -6,6 +6,8 @@
         class="loginForm"
         :model="formData"
         :rules="rules"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
       >
         <a-form-model-item
           label="用户名"
@@ -32,6 +34,7 @@
             placeholder="请输入密码"
             type="password"
             v-model="formData.password"
+            @keyup.enter="submitForm('loginFormRef')"
           >
             <a-icon
               slot="prefix"
@@ -58,10 +61,12 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   data() {
     return {
+      labelCol: { span: 4 },
+      wrapperCol: { span: 20 },
+
       //表单的绑定模型
       formData: {
         username: "",

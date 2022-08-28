@@ -1,6 +1,13 @@
 //在本文件内按需导入 antdv 组件
 import Vue from "vue";
-import { Button, FormModel, Input, Icon, Message } from "ant-design-vue";
+import {
+  Button,
+  FormModel,
+  Input,
+  Icon,
+  Message,
+  Layout,
+} from "ant-design-vue";
 
 //不全局使用，只是挂载到对象上
 Message.config({
@@ -16,3 +23,4 @@ Vue.use(Button);
 Vue.use(FormModel);
 Vue.use(Input);
 Vue.use(Icon);
+Vue.use(Layout);
