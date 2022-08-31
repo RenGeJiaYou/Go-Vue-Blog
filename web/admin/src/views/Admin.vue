@@ -1,17 +1,14 @@
 <template>
   <a-layout class="container">
-    <a-layout-sider>
-      <div class="log">Go-Vue Blog 系统</div>
-      <Nav></Nav>
-    </a-layout-sider>
+    <Nav></Nav>
+
     <a-layout>
       <a-layout-header class="headerBtn">
-        <a-button
-          type="danger"
-          @click="logout"
-        >退出</a-button>
+        <Header></Header>
       </a-layout-header>
-      <a-layout-content>Content</a-layout-content>
+      <a-layout-content>
+        <router-view></router-view>
+      </a-layout-content>
       <a-layout-footer class="footerContainer">
         <Footer></Footer>
       </a-layout-footer>
@@ -22,22 +19,17 @@
 <script>
 import Nav from "../components/admin/Nav";
 import Footer from "../components/admin/Footer";
+import Header from "../components/admin/Header";
 export default {
   components: {
     Nav,
     Footer,
+    Header,
   },
   data() {
     return {};
   },
-  methods: {
-    logout() {
-      //1.清空token
-      window.localStorage.removeItem("token");
-      //2.回到路由 '/login'
-      this.$router.push("/login");
-    },
-  },
+  methods: {},
 };
 </script>
 
@@ -53,14 +45,5 @@ export default {
   display: flex;
   justify-content: end;
   align-items: center;
-}
-.log {
-  height: auto;
-  margin: 16px;
-  background-color: #fff;
-
-  text-align: center;
-
-  border-radius: 5px;
 }
 </style>

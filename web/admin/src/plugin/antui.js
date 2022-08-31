@@ -7,6 +7,7 @@ import {
   Icon,
   Message,
   Layout,
+  Menu,
 } from "ant-design-vue";
 
 //不全局使用，只是挂载到对象上
@@ -24,3 +25,4 @@ Vue.use(FormModel);
 Vue.use(Input);
 Vue.use(Icon);
 Vue.use(Layout);
+Vue.use(Menu);
