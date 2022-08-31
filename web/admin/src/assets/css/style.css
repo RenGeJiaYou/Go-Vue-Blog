@@ -3,3 +3,13 @@ html,body,#app{
     padding: 0;
     margin: 0;
 }
+/*承载内容的卡片，位于<content>内 */
+.ant-card{
+    margin: 10px;
+    background: white;
+    border-radius: 10px;
+}
+/*表单元素*/
+.ant-table{
+margin-top: 20px;
+}

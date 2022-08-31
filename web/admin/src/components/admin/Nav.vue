@@ -69,8 +69,9 @@ export default {
       //keyPath   一个数组，记录父子项的所有key。index越大辈分越大。如点击《文章列表》0: "getArts" 1: "article"
       console.log(item, key, keyPath);
 
-      //加不加'/'都一样，vue router 很智能。
-      this.$router.push(item.key);
+      this.$router.push("/admin/" + item.key).catch((err) => {
+        console.log(err);
+      });
     },
   },
 };

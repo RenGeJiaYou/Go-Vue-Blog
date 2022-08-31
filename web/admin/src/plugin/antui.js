@@ -8,6 +8,10 @@ import {
   Message,
   Layout,
   Menu,
+  Card,
+  Table,
+  Row,
+  Col,
 } from "ant-design-vue";
 
 //不全局使用，只是挂载到对象上
@@ -26,3 +30,8 @@ Vue.use(Input);
 Vue.use(Icon);
 Vue.use(Layout);
 Vue.use(Menu);
+
+Vue.use(Card);
+Vue.use(Table);
+Vue.use(Row);
+Vue.use(Col);

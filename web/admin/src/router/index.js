@@ -26,25 +26,26 @@ const routes = [
     path: "/admin",
     name: "admin",
     component: Admin,
+    //子路由的path 如果写'/'将会定位到根路径
     children: [
       {
-        path: "/index",
+        path: "index",
         component: Index,
       },
       {
-        path: "/addart",
+        path: "addart",
         component: AddArt,
       },
       {
-        path: "/artlist",
+        path: "artlist",
         component: Artlist,
       },
       {
-        path: "/catelist",
+        path: "catelist",
         component: CateList,
       },
       {
-        path: "/userlist",
+        path: "userlist",
         component: UserList,
       },
     ],
