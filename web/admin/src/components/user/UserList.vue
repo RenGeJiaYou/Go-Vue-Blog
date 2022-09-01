@@ -21,11 +21,26 @@
         bordered
         rowKey="ID"
       >
+        <!--↓↓↓范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<a-table>早已用columns[]所定义的key指定具名插槽↓↓↓------------------------------------------------->
         <!--希望将 role的1、2换成管理员、订阅者 -->
         <span
           slot="role"
           slot-scope="data"
         >{{data==1?'管理员':'订阅者'}}</span>
+
+        <template
+          slot="action"
+          slot-scope="data"
+        >
+          <div class="actionSlot">
+            <a-button
+              type="primary"
+              style="margin-right: 15px"
+            >编辑</a-button>
+            <a-button type="danger">删除</a-button>
+          </div>
+        </template>
+        <!--↑↑↑范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<a-table>早已用columns[]所定义的key指定具名插槽↑↑↑------------------------------------------------->
       </a-table>
     </a-card>
   </div>
@@ -56,13 +71,14 @@ const columns = [
     width: "20%",
     align: "center",
     key: "role",
-    scopedSlots: { customRender: "role" },
+    scopedSlots: { customRender: "role" }, //指明要渲染的是slot="role"的那一行
   },
   {
     title: "操作",
-    width: "20%",
+    width: "30%",
     align: "center",
     key: "action",
+    scopedSlots: { customRender: "action" },
   },
 ];
 
@@ -138,4 +154,8 @@ export default {
 </script>
     
 <style scoped>
+.actionSlot {
+  display: flex;
+  justify-content: center;
+}
 </style>

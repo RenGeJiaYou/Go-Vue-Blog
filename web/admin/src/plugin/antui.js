@@ -12,6 +12,7 @@ import {
   Table,
   Row,
   Col,
+  LocaleProvider,
 } from "ant-design-vue";
 
 //不全局使用，只是挂载到对象上
@@ -35,3 +36,5 @@ Vue.use(Card);
 Vue.use(Table);
 Vue.use(Row);
 Vue.use(Col);
+
+Vue.use(LocaleProvider);
