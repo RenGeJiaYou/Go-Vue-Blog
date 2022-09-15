@@ -17,9 +17,10 @@
       <a-table
         :dataSource="userList"
         :columns="columns"
-        :pagination="paginationOption"
+        :pagination="pagination"
         bordered
         rowKey="ID"
+        @change="handleTableChange"
       >
         <!--↓↓↓范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<a-table>早已用columns[]所定义的key指定具名插槽↓↓↓------------------------------------------------->
         <!--希望将 role的1、2换成管理员、订阅者 -->
@@ -93,13 +94,19 @@ export default {
       //规定列格式
       columns,
 
+      //每页的页码和当前页数,此处数据将传递给getUserList()的 axios 请求
+      queryParam: {
+        pagesize: 5,
+        pagenum: 1,
+      },
+
+      visible: false,
+
       //分页器配置
-      paginationOption: {
-        pageSizeOptions: ["5", "10", "15", "20"], //指定每页可以显示多少条
-
-        defaultCurrent: 1, //默认的当前页数
-        defaultPageSize: 5, ///默认的每页条数
-
+      pagination: {
+        pageSizeOptions: ["5", "10", "20"], //指定每页可以显示多少条
+        pageSize: 5, ///每页条数
+        current: 1, //当前页码
         total: 0, //数据总量
         showSizeChanger: true, //允许更改每页条数
         showTotal: (total, range) => {
@@ -108,21 +115,6 @@ export default {
           //range[1]：当前页码的最后一条的序号
           `${range[0]}-${range[1]}  共 ${total} 条数据`;
         },
-
-        //分页器的时间直接写到这里时，函数名前要加'on'
-        onChange: (page, pageSize) => {
-          //页码改变的回调
-          this.paginationOption.defaultCurrent = page;
-          this.paginationOption.defaultPageSize = pageSize;
-        },
-        // onShowSizeChange: (current, size) => {
-        //   //pageSize变化的回调
-        //   //current: 当前页数
-        //   //size:当前尺寸
-        //   //todo 确定是这两个default 而不是current/pageSize 吗？
-        //   this.paginationOption.defaultCurrent = current;
-        //   this.paginationOption.defaultPageSize = size;
-        // },
       },
     };
   },
@@ -133,21 +125,57 @@ export default {
   },
 
   methods: {
+    //获取列表数据
     async getUserList() {
       //将旧res的data部分又赋给res.即只保留 res 的 data 部分
       const { data: res } = await this.$axios.get("users", {
         params: {
-          pagenum: this.paginationOption.defaultCurrent,
-          pagesize: this.paginationOption.defaultPageSize,
+          pagenum: this.queryParam.pagenum,
+          pagesize: this.queryParam.pagesize,
         },
       });
 
       if (res.status != 200) return this.$message.error(res.message);
 
-      //确认无误，赋值
+      //确认无误，保存返回结果
       this.userList = res.data;
-      this.paginationOption.total = res.total;
+      this.pagination.total = res.total;
     },
+
+    //Table 分页、排序、筛选变化时触发(onChange方法名已存在于 antdv API,遂更名)
+    handleTableChange(pagination, filters, sorter) {
+      /* pagination 的主要字段：
+         current:当前页码
+         pageSize:每页条目
+         total: 数据总量
+      */
+
+      // pager 是一个临时变量。
+      //用于保存用户操作后的新数据，并传递到 this.pagination 中，以完成页面的更新。
+      let pager = { ...this.pagination };
+
+      //1.【用户界面】拿到更新的值（由回调函数所给的参数 pagination 提供）
+      pager.current = pagination.current;
+      pager.pageSize = pagination.pageSize;
+
+      //2.【后端数据请求函数】拿到更新的值（由回调函数所给的参数 pagination 提供）
+      this.queryParam.pagenum = pagination.current;
+      this.queryParam.pagesize = pagination.pageSize;
+
+      //3.如果更新后的每页条目！==之前的每页条目，【用户界面】和【后端数据】都回到第一页
+      if (pagination.pageSize !== this.pagination.pageSize) {
+        pager.current = 1;
+        this.queryParam.pagenum = 1;
+      }
+
+      //4.更新【用户界面】
+      this.pagination = pager;
+
+      //5.请求【后端数据】
+      this.getUserList();
+    },
+
+    //查找用户事件
     onSearch() {},
   },
 };
