@@ -6,7 +6,9 @@
           <a-input-search
             placeholder="输入用户名查找"
             enter-button
-            @search="onSearch"
+            v-model="queryParam.username"
+            @search="getUserList"
+            allowClear
           />
         </a-col>
         <a-col :span="4">
@@ -23,11 +25,16 @@
         @change="handleTableChange"
       >
         <!--↓↓↓范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<a-table>早已用columns[]所定义的key指定具名插槽↓↓↓------------------------------------------------->
-        <!--希望将 role的1、2换成管理员、订阅者 -->
+        <!--1.【组件传值：父→子】“管理员”/“订阅者” 这两个数据是属于 父组件UserList.vue 的，想传给子组件显示。使用具名插槽slot 和子组件<a-table>的columns[] 定义的 scopedSlots 所声明的具名插槽值一致 -->
+        <!--2.【组件传值：子→父】当前行的role值是 子组件<a-table> 用自己的 dataSource 得到的，想传给父组件（用于验证）。使用slot-scoped 在父组件调用时产生一个接收数据的接口 -->
+
         <span
           slot="role"
-          slot-scope="data"
-        >{{data==1?'管理员':'订阅者'}}</span>
+          slot-scope="role"
+        >{{role==1?'管理员':'订阅者'}}</span>
+
+        <!--1.【组件传值：父→子】UserList.vue调用 <a-table> ,在两处约定具名插槽 "action" ，将<template>内的两个按钮元素传到“操作”一列-->
+        <!--2.【组件传值：子→父】经过console 打印测试，可得知子组件 <a-table> 的返回数据-->
 
         <template
           slot="action"
@@ -38,7 +45,10 @@
               type="primary"
               style="margin-right: 15px"
             >编辑</a-button>
-            <a-button type="danger">删除</a-button>
+            <a-button
+              type="danger"
+              @click="showConfirm(data.ID)"
+            >删除</a-button>
           </div>
         </template>
         <!--↑↑↑范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<a-table>早已用columns[]所定义的key指定具名插槽↑↑↑------------------------------------------------->
@@ -57,7 +67,7 @@ const columns = [
     align: "center",
     key: "id",
 
-    scopedSlots: { customRender: "id" },
+    scopedSlots: { customRender: "id" }, //是Vue子组件内具名插槽<slot name="xxx">写法的封装
   },
   {
     title: "用户名",
@@ -72,7 +82,7 @@ const columns = [
     width: "20%",
     align: "center",
     key: "role",
-    scopedSlots: { customRender: "role" }, //指明要渲染的是slot="role"的那一行
+    scopedSlots: { customRender: "role" }, //子组件的具名插槽，值要和slot="role"一致
   },
   {
     title: "操作",
@@ -96,6 +106,7 @@ export default {
 
       //每页的页码和当前页数,此处数据将传递给getUserList()的 axios 请求
       queryParam: {
+        username: "",
         pagesize: 5,
         pagenum: 1,
       },
@@ -125,11 +136,13 @@ export default {
   },
 
   methods: {
-    //获取列表数据
+    //获取列表数据(囊括带搜索条件&&无搜索条件)
+    // @@重构tip,@search 提供了一个回调函数(value,event)，包含了搜索值，试试能不能用
     async getUserList() {
-      //将旧res的data部分又赋给res.即只保留 res 的 data 部分
+      //将所接收数据的data部分赋给res.
       const { data: res } = await this.$axios.get("users", {
         params: {
+          username: this.queryParam.username, //为""时说明是无搜索条件，不为空时说明带搜索条件
           pagenum: this.queryParam.pagenum,
           pagesize: this.queryParam.pagesize,
         },
@@ -175,8 +188,45 @@ export default {
       this.getUserList();
     },
 
-    //查找用户事件
-    onSearch() {},
+    //删除确认
+    showConfirm(id) {
+      this.$confirm({
+        title: "确定删除该项吗?",
+        content: "删除后将不可恢复",
+        okText: "确认",
+        okType: "primary",
+        cancelText: "取消",
+        onOk: () => {
+          this.deleteUser(id); //使用箭头函数，this 指向当前Vue实例，而非调用该 this 的函数
+          this.$message.success("删除成功");
+        },
+        onCancel: () => {
+          this.$message.info("已取消");
+        },
+      });
+    },
+
+    //删除当前用户
+    async deleteUser(id) {
+      // 子组件<a-table>所提供给父组件的值 data 是当前行数据，即getUserList()的结果数组中的当前一条，字段包括
+      /*  CreatedAt
+          DeletedAt
+          ID
+          UpdatedAt
+          password
+          role
+          username
+      */
+      // console.log("<a-table>向父组件的传输值:", data);
+      const res = await this.$axios.delete(`user/${id}`);
+      console.log(id, res);
+      if (res.status !== 200) {
+        return this.$message.error(res.message);
+      }
+
+      //5.删除后刷新列表
+      this.getUserList();
+    },
   },
 };
 </script>

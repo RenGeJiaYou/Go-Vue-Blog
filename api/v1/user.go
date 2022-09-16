@@ -48,6 +48,7 @@ func GetUsers(c *gin.Context) {
 	//从请求报文的 params 提取数据
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
 	pageNum, _ := strconv.Atoi(c.Query("pagenum"))
+	username := c.Query("username")
 
 	if pageSize == 0 {
 		pageSize = -1 //GORM 的Limit(-1) 表示不要 Limit() 这个限制
@@ -57,7 +58,7 @@ func GetUsers(c *gin.Context) {
 	}
 
 	//查询数据库
-	users, total := model.GetUsers(pageSize, pageNum)
+	users, total := model.GetUsers(username, pageSize, pageNum)
 
 	//返回数据
 	c.JSON(http.StatusOK, gin.H{
