@@ -47,6 +47,21 @@ func CreateUser(user *User) int { // Go 的 struct 是引用类型，作为参�
 	return errmsg.SUCCESS
 }
 
+// GetUser 获取单个用户
+// Params id int	搜索所需的用户ID
+// Return u User	所查找的用户
+func GetUser(id int) (User, int) {
+	var u User
+
+	/*SELECT * FROM user WHERE ID= id*/
+	err := db.Limit(1).Where("id = ?", id).Find(&u).Error
+
+	if err != nil {
+		return u, errmsg.ERROR_USER_NOT_EXIST
+	}
+	return u, errmsg.SUCCESS
+}
+
 // GetUsers 获取用户列表
 // Params username string	搜索所需的用户名
 // Params pageSize int		一页的数量
@@ -57,23 +72,25 @@ func GetUsers(username string, pageSize int, pageNum int) ([]User, int64) {
 	var user User
 	var users []User
 	var total int64
-	var err error
 
+	//非搜索行为
 	if username == "" {
 		err = db.
 			Find(&users).
 			Limit(pageSize).
 			Offset((pageNum - 1) * pageSize).Error
+		db.Model(&user).Count(&total)
 	}
 
-	err = db.
+	//搜索行为
+	err := db.
 		Where("username LIKE ?", username+"%").
 		Find(&users).
+		Count(&total).
 		Limit(pageSize).
 		Offset((pageNum - 1) * pageSize).Error
 
-	db.Model(&user).Count(&total)
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err == gorm.ErrRecordNotFound {
 		fmt.Println("查找用户列表失败： ", err)
 		return nil, 0
 	}

@@ -41,7 +41,23 @@ func AddUser(c *gin.Context) {
 
 }
 
-//查询单个用户（在 Blog 系统中用处不大）
+// 查询单个用户（在 Blog 系统中用于编辑指定用户）
+func GetUserInfo(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id < 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  errmsg.ERROR_USER_NOT_EXIST,
+			"message": errmsg.GetErrMsg(errmsg.ERROR_USER_NOT_EXIST),
+		})
+	}
+	user, code := model.GetUser(id)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"data":    user,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
 
 // GetUsers 查询用户列表
 func GetUsers(c *gin.Context) {

@@ -43,6 +43,7 @@ func InitRouter() {
 	{
 		//user 的路由接口
 		router.GET("users", v1.GetUsers)
+		router.GET("user/:id", v1.GetUserInfo)
 		router.POST("user/add", v1.AddUser)
 
 		//article 的路由接口

@@ -12,7 +12,11 @@
           />
         </a-col>
         <a-col :span="4">
-          <a-button type="primary">新增用户</a-button>
+          <!--vue文件中，<template>调用数据不用像<script>那样加this.-->
+          <a-button
+            type="primary"
+            @click="addUserVisible = true"
+          >新增用户</a-button>
         </a-col>
       </a-row>
 
@@ -54,6 +58,36 @@
         <!--↑↑↑范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<a-table>早已用columns[]所定义的key指定具名插槽↑↑↑------------------------------------------------->
       </a-table>
     </a-card>
+
+    <!--新增用户 弹框-->
+    <a-modal
+      title="新增用户"
+      destroyOnClose
+      :visible="addUserVisible"
+      @ok="handleAddUserOK"
+      @cancel="handleAddUserCancel"
+    >
+      <a-form-model
+        :model="userInfo"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+      >
+        <a-form-model-item
+          label="用户名"
+          :rules="rules"
+          ref="addUserRef"
+        >
+          <a-input v-model="userInfo.username"></a-input>
+        </a-form-model-item>
+        <a-form-model-item label="密码">
+          <a-input-password v-model="userInfo.password"></a-input-password>
+        </a-form-model-item>
+        <a-form-model-item label="确认密码">
+          <a-input-password v-model="userInfo.checkPass"></a-input-password>
+        </a-form-model-item>
+        <a-form-model-item label="是否为管理员"></a-form-model-item>
+      </a-form-model>
+    </a-modal>
   </div>
 </template>
     
@@ -111,7 +145,8 @@ export default {
         pagenum: 1,
       },
 
-      visible: false,
+      //visible: false, //视频说这是删除确认的visible属性。但是官方示例中没有。实测删除后也无影响
+      addUserVisible: false,
 
       //分页器配置
       pagination: {
@@ -124,8 +159,63 @@ export default {
           //拿到总数，控制分页器的描述字符串具体内容
           //range[0]：当前页码的第一条数据的序号
           //range[1]：当前页码的最后一条的序号
-          `${range[0]}-${range[1]}  共 ${total} 条数据`;
+          return `共 ${total} 条数据  `;
         },
+      },
+
+      //添加用户弹框绑定的数据对象
+      userInfo: {
+        id: 0,
+        username: "",
+        password: "",
+        checkPass: "",
+        role: 2,
+      },
+      //添加用户弹框文本宽度和控件宽度
+      labelCol: { span: 6 },
+      wrapperCol: { span: 14, offset: 1 },
+      //添加用户弹框表单验证
+      rules: {
+        username: [
+          {
+            required: true,
+            message: "请输入用户名",
+            trigger: "blur",
+          },
+          {
+            min: 4,
+            max: 12,
+            message: "长度保持在4-12个字符",
+            trigger: "blur",
+          },
+        ],
+        password: [
+          {
+            required: true,
+            message: "请输入密码",
+            trigger: "blur",
+          },
+          {
+            min: 6,
+            max: 20,
+            message: "长度保持在6-20个字符",
+            trigger: "blur",
+          },
+        ],
+        checkPass: [
+          {
+            required: true,
+            message: "请再次输入密码",
+            trigger: "blur",
+          },
+          {
+            min: 6,
+            max: 20,
+            message: "长度保持在6-20个字符",
+            trigger: "blur",
+          },
+        ],
+        role: [],
       },
     };
   },
@@ -153,6 +243,7 @@ export default {
       //确认无误，保存返回结果
       this.userList = res.data;
       this.pagination.total = res.total;
+      console.log("实际返回的数据条数", res.total);
     },
 
     //Table 分页、排序、筛选变化时触发(onChange方法名已存在于 antdv API,遂更名)
@@ -188,24 +279,6 @@ export default {
       this.getUserList();
     },
 
-    //删除确认
-    showConfirm(id) {
-      this.$confirm({
-        title: "确定删除该项吗?",
-        content: "删除后将不可恢复",
-        okText: "确认",
-        okType: "primary",
-        cancelText: "取消",
-        onOk: () => {
-          this.deleteUser(id); //使用箭头函数，this 指向当前Vue实例，而非调用该 this 的函数
-          this.$message.success("删除成功");
-        },
-        onCancel: () => {
-          this.$message.info("已取消");
-        },
-      });
-    },
-
     //删除当前用户
     async deleteUser(id) {
       // 子组件<a-table>所提供给父组件的值 data 是当前行数据，即getUserList()的结果数组中的当前一条，字段包括
@@ -226,6 +299,36 @@ export default {
 
       //5.删除后刷新列表
       this.getUserList();
+    },
+    //删除确认,调用deleteUser()
+    showConfirm(id) {
+      this.$confirm({
+        title: "确定删除该项吗?",
+        content: "删除后将不可恢复",
+        okText: "确认",
+        okType: "primary",
+        cancelText: "取消",
+        onOk: () => {
+          this.deleteUser(id); //使用箭头函数，this 指向当前Vue实例，而非调用该 this 的函数
+          this.$message.success("删除成功");
+        },
+        onCancel: () => {
+          this.$message.info("已取消");
+        },
+      });
+    },
+
+    //添加用户弹窗 确认按钮
+    handleAddUserOK() {
+      //axios 调用API
+      this.addUserVisible = false;
+    },
+
+    //添加用户弹窗 取消按钮
+    handleAddUserCancel() {
+      //清空 model{} 中废弃的数据
+
+      this.addUserVisible = false;
     },
   },
 };
