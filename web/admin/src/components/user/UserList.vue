@@ -69,23 +69,48 @@
     >
       <a-form-model
         :model="userInfo"
+        :rules="rules"
+        ref="addUserRef"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
         <a-form-model-item
           label="用户名"
-          :rules="rules"
-          ref="addUserRef"
+          prop="username"
         >
           <a-input v-model="userInfo.username"></a-input>
         </a-form-model-item>
-        <a-form-model-item label="密码">
+        <a-form-model-item
+          label="密码"
+          prop="password"
+          has-feedback
+        >
           <a-input-password v-model="userInfo.password"></a-input-password>
         </a-form-model-item>
-        <a-form-model-item label="确认密码">
+        <a-form-model-item
+          label="确认密码"
+          prop="checkPass"
+          has-feedback
+        >
           <a-input-password v-model="userInfo.checkPass"></a-input-password>
         </a-form-model-item>
-        <a-form-model-item label="是否为管理员"></a-form-model-item>
+        <a-form-model-item label="是否为管理员">
+          <!--此处无需v-model双向绑定，数据的更新可用change回调函数完成-->
+          <a-select
+            default-value="订阅者"
+            style="width: 120px"
+            @change="addUserRoleChange"
+          >
+            <a-select-option
+              key="1"
+              value="1"
+            >管理员</a-select-option>
+            <a-select-option
+              key="2"
+              value="2"
+            >订阅者</a-select-option>
+          </a-select>
+        </a-form-model-item>
       </a-form-model>
     </a-modal>
   </div>
@@ -131,6 +156,28 @@ export default {
   name: "AdminIndex",
 
   data() {
+    let validatePass = (rule, value, callback) => {
+      if (value == "") {
+        callback(new Error("密码不得为空"));
+      } else if (value.length < 6 || value.length > 20) {
+        callback(new Error("密码位数应该在 6~20 位之间"));
+      } else {
+        //默认正确路径。  如果没有这个路径，若之前已进入其它错误路径，之前的错误信息将不会消失。
+        callback();
+      }
+    };
+
+    //密码确认框 校验器
+    let validatePass2 = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value !== this.userInfo.password) {
+        callback(new Error("两次输入不匹配!"));
+      } else {
+        callback();
+      }
+    };
+
     return {
       //用户列表的表单数据
       userList: [],
@@ -176,6 +223,8 @@ export default {
       wrapperCol: { span: 14, offset: 1 },
       //添加用户弹框表单验证
       rules: {
+        //两种方式：使用验证器+自定义回调函数 和 使用预设校验规则
+        //效果是一样的。此处分别写出以供学习
         username: [
           {
             required: true,
@@ -189,33 +238,8 @@ export default {
             trigger: "blur",
           },
         ],
-        password: [
-          {
-            required: true,
-            message: "请输入密码",
-            trigger: "blur",
-          },
-          {
-            min: 6,
-            max: 20,
-            message: "长度保持在6-20个字符",
-            trigger: "blur",
-          },
-        ],
-        checkPass: [
-          {
-            required: true,
-            message: "请再次输入密码",
-            trigger: "blur",
-          },
-          {
-            min: 6,
-            max: 20,
-            message: "长度保持在6-20个字符",
-            trigger: "blur",
-          },
-        ],
-        role: [],
+        password: [{ validator: validatePass, trigger: "change" }],
+        checkPass: [{ validator: validatePass2, trigger: "change" }],
       },
     };
   },
@@ -243,7 +267,7 @@ export default {
       //确认无误，保存返回结果
       this.userList = res.data;
       this.pagination.total = res.total;
-      console.log("实际返回的数据条数", res.total);
+      // console.log("实际返回的数据条数", res.total);
     },
 
     //Table 分页、排序、筛选变化时触发(onChange方法名已存在于 antdv API,遂更名)
@@ -278,7 +302,7 @@ export default {
       //5.请求【后端数据】
       this.getUserList();
     },
-
+    //==========================================
     //删除当前用户
     async deleteUser(id) {
       // 子组件<a-table>所提供给父组件的值 data 是当前行数据，即getUserList()的结果数组中的当前一条，字段包括
@@ -317,7 +341,7 @@ export default {
         },
       });
     },
-
+    //==========================================
     //添加用户弹窗 确认按钮
     handleAddUserOK() {
       //axios 调用API
@@ -330,6 +354,14 @@ export default {
 
       this.addUserVisible = false;
     },
+    //添加用户弹窗 多选框角色变更事件
+    addUserRoleChange(val) {
+      //将更新后的值传到 userInfo 中，以待传到后端
+      this.userInfo.role = val;
+      console.log(this.userInfo.role);
+    },
+
+    //==========================================
   },
 };
 </script>

@@ -14,6 +14,7 @@ import {
   Col,
   LocaleProvider,
   Modal,
+  Select,
 } from "ant-design-vue";
 
 //不全局使用，只是挂载到对象上
@@ -41,3 +42,4 @@ Vue.use(Col);
 
 Vue.use(LocaleProvider);
 Vue.use(Modal);
+Vue.use(Select);
