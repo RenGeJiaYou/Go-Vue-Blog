@@ -102,7 +102,7 @@ func EditArt(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": code,
-		"msg":    errmsg.GetErrMsg(code),
+		"message":    errmsg.GetErrMsg(code),
 	})
 }
 
@@ -113,7 +113,7 @@ func DeleteArt(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": code,
-		"msg":    errmsg.GetErrMsg(code),
+		"message":    errmsg.GetErrMsg(code),
 		"delete": "i am delete",
 	})
 }

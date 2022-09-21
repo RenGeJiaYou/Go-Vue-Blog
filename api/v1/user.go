@@ -91,7 +91,7 @@ func EditUser(c *gin.Context) {
 
 	var user model.User
 	c.ShouldBindJSON(&user)
-	code := model.CheckUser(user.Username)
+	code := model.CheckUpdateUser(id,user.Username)
 
 	if code == errmsg.SUCCESS {
 		model.EditUser(&user, id) //实际上只能改 username 和 role
@@ -103,8 +103,8 @@ func EditUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": code,
-		"msg":    errmsg.GetErrMsg(code),
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
 	})
 }
 
@@ -114,8 +114,8 @@ func DeleteUser(c *gin.Context) {
 	code := model.DeleteUser(id)
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": code,
-		"msg":    errmsg.GetErrMsg(code),
-		"delete": "i am delete",
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+		"delete":  "i am delete",
 	})
 }

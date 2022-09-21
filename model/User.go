@@ -32,7 +32,23 @@ func CheckUser(name string) int {
 		return errmsg.ERROR_USERNAME_USED
 	}
 	return errmsg.SUCCESS
+}
 
+// CheckUpdateUser 更新用户时重名检测，防止更名为其它已存在的用户名
+// Params id uint		待更新 User 对象的id
+// Params name string	待更新 User 对象的新用户名
+// Return code int		一个状态码，表示正确或错误
+func CheckUpdateUser(id int, name string) int {
+	var u User //作用：1.规定从哪个表查询  2.将查询结果灌注到该对象中
+	db.
+		Select("id,username").
+		Where("username = ?", name).
+		First(&u) //字段名全部是小写
+	if u.ID == uint(id) || u.ID <= 0 {
+		//说明本次更新没有修改用户名 || 更新的用户名未被占用
+		return errmsg.SUCCESS
+	}
+	return errmsg.ERROR_USERNAME_USED
 }
 
 // CreateUser 向数据库添加用户
@@ -82,7 +98,7 @@ func GetUsers(username string, pageSize int, pageNum int) ([]User, int64) {
 		db.Model(&user).Count(&total)
 	}
 
-	//搜索行为
+	//搜索行为（Count()要在 Limit()/Offset() 之前，否则报错）
 	err := db.
 		Where("username LIKE ?", username+"%").
 		Find(&users).

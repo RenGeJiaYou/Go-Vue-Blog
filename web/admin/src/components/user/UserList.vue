@@ -38,7 +38,7 @@
         >{{role==1?'管理员':'订阅者'}}</span>
 
         <!--1.【组件传值：父→子】UserList.vue调用 <a-table> ,在两处约定具名插槽 "action" ，将<template>内的两个按钮元素传到“操作”一列-->
-        <!--2.【组件传值：子→父】经过console 打印测试，可得知子组件 <a-table> 的返回数据-->
+        <!--2.【组件传值：子→父】经过console 打印测试，可得知data是子组件 <a-table> 的返回数据-->
 
         <template
           slot="action"
@@ -47,12 +47,17 @@
           <div class="actionSlot">
             <a-button
               type="primary"
+              @click="editUser(data)"
               style="margin-right: 15px"
             >编辑</a-button>
+
             <a-button
               type="danger"
-              @click="showConfirm(data.ID)"
+              @click="deleteConfirm(data.ID)"
+              style="margin-right: 15px"
             >删除</a-button>
+
+            <a-button @click="resetPassword(data.ID)">重置密码</a-button>
           </div>
         </template>
         <!--↑↑↑范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<a-table>早已用columns[]所定义的key指定具名插槽↑↑↑------------------------------------------------->
@@ -62,7 +67,6 @@
     <!--新增用户 弹框-->
     <a-modal
       title="新增用户"
-      destroyOnClose
       :visible="addUserVisible"
       @ok="handleAddUserOK"
       @cancel="handleAddUserCancel"
@@ -113,6 +117,121 @@
         </a-form-model-item>
       </a-form-model>
     </a-modal>
+    <!--/新增用户 弹框-->
+
+    <!--编辑用户 弹框-->
+    <a-modal
+      title="编辑用户"
+      :visible="editUserVisible"
+      @ok="handleEditUserOK"
+      @cancel="handleEditUserCancel"
+    >
+      <a-form-model
+        :model="userEdit"
+        :rules="rules"
+        ref="editUserRef"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+      >
+        <a-form-model-item
+          label="用户名"
+          prop="username"
+        >
+          <a-input v-model="userEdit.username"></a-input>
+        </a-form-model-item>
+        <!--
+          编辑用户功能 - 修改用户密码功能日后再写
+          <a-form-model-item
+          label="密码"
+          prop="password"
+          has-feedback
+        >
+          <a-input-password v-model="userEdit.password"></a-input-password>
+        </a-form-model-item>-->
+        <!-- <a-form-model-item
+          label="确认密码"
+          prop="checkPass"
+          has-feedback
+        >
+          <a-input-password v-model="userEdit.checkPass"></a-input-password>
+        </a-form-model-item>-->
+        <a-form-model-item label="是否为管理员">
+          <!--此处无需v-model双向绑定，数据的更新可用change回调函数完成-->
+          <a-select
+            :default-value="userEdit.role"
+            style="width: 120px"
+            @change="editUserRoleChange"
+          >
+            <a-select-option
+              key="1"
+              :value="1"
+            >管理员</a-select-option>
+            <a-select-option
+              key="2"
+              :value="2"
+            >订阅者</a-select-option>
+          </a-select>
+        </a-form-model-item>
+      </a-form-model>
+    </a-modal>
+    <!--/编辑用户 弹框-->
+
+    <!--编辑用户 弹框-->
+    <a-modal
+      title="编辑用户"
+      :visible="editUserVisible"
+      @ok="handleEditUserOK"
+      @cancel="handleEditUserCancel"
+    >
+      <a-form-model
+        :model="userEdit"
+        :rules="rules"
+        ref="editUserRef"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+      >
+        <a-form-model-item
+          label="用户名"
+          prop="username"
+        >
+          <a-input v-model="userEdit.username"></a-input>
+        </a-form-model-item>
+        <!--
+          编辑用户功能 - 修改用户密码功能日后再写
+          <a-form-model-item
+          label="密码"
+          prop="password"
+          has-feedback
+        >
+          <a-input-password v-model="userEdit.password"></a-input-password>
+        </a-form-model-item>-->
+        <!-- <a-form-model-item
+          label="确认密码"
+          prop="checkPass"
+          has-feedback
+        >
+          <a-input-password v-model="userEdit.checkPass"></a-input-password>
+        </a-form-model-item>-->
+        <a-form-model-item label="是否为管理员">
+          <!--此处无需v-model双向绑定，数据的更新可用change回调函数完成-->
+          <a-select
+            :default-value="userEdit.role"
+            style="width: 120px"
+            @change="editUserRoleChange"
+          >
+            <a-select-option
+              key="1"
+              :value="1"
+            >管理员</a-select-option>
+            <a-select-option
+              key="2"
+              :value="2"
+            >订阅者</a-select-option>
+          </a-select>
+        </a-form-model-item>
+      </a-form-model>
+    </a-modal>
+    <!--/编辑用户 弹框-->
   </div>
 </template>
     
@@ -193,7 +312,8 @@ export default {
       },
 
       //visible: false, //视频说这是删除确认的visible属性。但是官方示例中没有。实测删除后也无影响
-      addUserVisible: false,
+      addUserVisible: false, //隐藏/浮现添加用户弹框
+      editUserVisible: false, //隐藏/浮现编辑用户弹框
 
       //分页器配置
       pagination: {
@@ -218,10 +338,19 @@ export default {
         checkPass: "",
         role: 2,
       },
-      //添加用户弹框文本宽度和控件宽度
+      //编辑用户弹框绑定的数据对象
+      userEdit: {
+        id: 0,
+        username: "",
+        password: "",
+        checkPass: "",
+        role: 0,
+      },
+
+      //添加&编辑用户弹框文本宽度和控件宽度
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
-      //添加用户弹框表单验证
+      //添加&编辑用户弹框表单验证
       rules: {
         //两种方式：使用验证器+自定义回调函数 和 使用预设校验规则
         //效果是一样的。此处分别写出以供学习
@@ -316,16 +445,16 @@ export default {
       */
       // console.log("<a-table>向父组件的传输值:", data);
       const res = await this.$axios.delete(`user/${id}`);
-      console.log(id, res);
       if (res.status !== 200) {
         return this.$message.error(res.message);
       }
+      this.$message.success("删除成功");
 
       //5.删除后刷新列表
       this.getUserList();
     },
     //删除确认,调用deleteUser()
-    showConfirm(id) {
+    deleteConfirm(id) {
       this.$confirm({
         title: "确定删除该项吗?",
         content: "删除后将不可恢复",
@@ -334,7 +463,6 @@ export default {
         cancelText: "取消",
         onOk: () => {
           this.deleteUser(id); //使用箭头函数，this 指向当前Vue实例，而非调用该 this 的函数
-          this.$message.success("删除成功");
         },
         onCancel: () => {
           this.$message.info("已取消");
@@ -344,24 +472,95 @@ export default {
     //==========================================
     //添加用户弹窗 确认按钮
     handleAddUserOK() {
-      //axios 调用API
-      this.addUserVisible = false;
-    },
+      //在 validate 中完成全部操作
+      this.$refs.addUserRef.validate(async (valid) => {
+        if (!valid) return this.$message.error("未通过验证，请重新填写"); //回调函数的实现总要写 return
+        //axios 调用API
+        const { data: res } = await this.$axios.post("user/add", {
+          username: this.userInfo.username,
+          password: this.userInfo.password,
+          role: this.userInfo.role,
+        });
+        if (res.status !== 200) return this.$message.error(res.message);
 
+        this.addUserVisible = false; //关闭弹窗
+        this.$refs.addUserRef.resetFields(); //清空数据。组件提供的方法可通过ref的方式调用
+        this.$message.success("添加用户成功"); //成功提示
+        this.getUserList(); //数据更新后要及时刷新
+      });
+    },
     //添加用户弹窗 取消按钮
     handleAddUserCancel() {
       //清空 model{} 中废弃的数据
 
       this.addUserVisible = false;
+      this.$refs.addUserRef.resetFields();
+      this.$message.info("已取消添加");
     },
-    //添加用户弹窗 多选框角色变更事件
+    //添加用户弹窗 "是否为管理员"多选框变更事件
     addUserRoleChange(val) {
       //将更新后的值传到 userInfo 中，以待传到后端
       this.userInfo.role = val;
       console.log(this.userInfo.role);
     },
-
     //==========================================
+    //编辑用户按钮
+    editUser(data) {
+      // console.log(data); //data包含了当前行所有数据
+
+      //1.将 data 导入v-model数据模型
+      this.userEdit.id = data.ID;
+      this.userEdit.username = data.username;
+      this.userEdit.password = data.password;
+      this.userEdit.role = data.role;
+
+      //2.打开弹框
+      this.editUserVisible = true;
+
+      //3.此时用户编辑，修改数据。响应式地更新到模型里
+    },
+    //编辑用户弹窗 确认按钮
+    handleEditUserOK() {
+      //在 validate 中完成全部操作
+      this.$refs.editUserRef.validate(async (valid) => {
+        if (!valid) return this.$message.error("未通过验证，请重新填写"); //回调函数的实现总要写 return
+
+        //axios 调用API，只能修改用户名和身份，修改密码是独立的功能点
+        const { data: res } = await this.$axios.put(
+          `user/${this.userEdit.id}`,
+          {
+            username: this.userEdit.username,
+            role: this.userEdit.role,
+          }
+        );
+
+        if (res.status !== 200) return this.$message.error(res.message);
+        this.editUserVisible = false; //关闭弹窗
+        // this.$refs.editUserRef.resetFields(); //无需清空数据。反正每次打开编辑弹窗都会重新加载本行数据
+        this.$message.success("编辑用户成功"); //成功提示
+        this.getUserList(); //数据更新后要及时刷新
+      });
+    },
+    //编辑用户弹窗 取消按钮
+    handleEditUserCancel() {
+      this.editUserVisible = false;
+      // this.$refs.editUserRef.resetFields();//无需清空数据，反正每次点击编辑都会重新加载数据
+      this.$message.info("已取消编辑");
+    },
+    //编辑用户弹窗 "是否为管理员"多选框变更事件
+    editUserRoleChange(val) {
+      //将更新后的值传到 userInfo 中，以待传到后端
+      this.userEdit.role = val;
+    },
+    //==========================================
+    // 重置密码按钮
+    resetPassword(id) {
+      /*
+      密码安全校验（配合 rules 使用）
+      获取数据向后端发送 PUT 请求
+      $message.error()/success()
+      */
+    },
   },
 };
 </script>
