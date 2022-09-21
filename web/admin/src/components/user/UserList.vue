@@ -1,6 +1,7 @@
 <template>
   <div>
     <a-card>
+      <!--表头部分-->
       <a-row :gutter="16">
         <a-col :span="6">
           <a-input-search
@@ -19,7 +20,9 @@
           >新增用户</a-button>
         </a-col>
       </a-row>
+      <!--/表头部分-->
 
+      <!--表单部分-->
       <a-table
         :dataSource="userList"
         :columns="columns"
@@ -57,11 +60,12 @@
               style="margin-right: 15px"
             >删除</a-button>
 
-            <a-button @click="resetPassword(data.ID)">重置密码</a-button>
+            <a-button @click="resetPassword(data)">重置密码</a-button>
           </div>
         </template>
         <!--↑↑↑范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<a-table>早已用columns[]所定义的key指定具名插槽↑↑↑------------------------------------------------->
       </a-table>
+      <!--/表单部分-->
     </a-card>
 
     <!--新增用户 弹框-->
@@ -139,22 +143,7 @@
         >
           <a-input v-model="userEdit.username"></a-input>
         </a-form-model-item>
-        <!--
-          编辑用户功能 - 修改用户密码功能日后再写
-          <a-form-model-item
-          label="密码"
-          prop="password"
-          has-feedback
-        >
-          <a-input-password v-model="userEdit.password"></a-input-password>
-        </a-form-model-item>-->
-        <!-- <a-form-model-item
-          label="确认密码"
-          prop="checkPass"
-          has-feedback
-        >
-          <a-input-password v-model="userEdit.checkPass"></a-input-password>
-        </a-form-model-item>-->
+
         <a-form-model-item label="是否为管理员">
           <!--此处无需v-model双向绑定，数据的更新可用change回调函数完成-->
           <a-select
@@ -176,58 +165,38 @@
     </a-modal>
     <!--/编辑用户 弹框-->
 
-    <!--编辑用户 弹框-->
+    <!--重置密码 弹框-->
     <a-modal
-      title="编辑用户"
-      :visible="editUserVisible"
-      @ok="handleEditUserOK"
-      @cancel="handleEditUserCancel"
+      title="重置用户密码"
+      :visible="resetPassVisible"
+      @ok="handleResetPassOK"
+      @cancel="handleResetPassCancel"
     >
       <a-form-model
-        :model="userEdit"
-        :rules="rules"
-        ref="editUserRef"
+        :model="resetPass"
+        :rules="resetPassRules"
+        ref="resetPassRef"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-model-item
-          label="用户名"
-          prop="username"
-        >
-          <a-input v-model="userEdit.username"></a-input>
+        <!--一打开弹框 resetPass.username就装载到label后面了。说明JS数据加载早于 DOM 渲染-->
+        <a-form-model-item label="用户名">
+          <span>{{resetPass.username}}</span>
         </a-form-model-item>
-        <!--
-          编辑用户功能 - 修改用户密码功能日后再写
-          <a-form-model-item
+
+        <a-form-model-item
           label="密码"
           prop="password"
           has-feedback
         >
-          <a-input-password v-model="userEdit.password"></a-input-password>
-        </a-form-model-item>-->
-        <!-- <a-form-model-item
+          <a-input-password v-model="resetPass.password"></a-input-password>
+        </a-form-model-item>
+        <a-form-model-item
           label="确认密码"
           prop="checkPass"
           has-feedback
         >
-          <a-input-password v-model="userEdit.checkPass"></a-input-password>
-        </a-form-model-item>-->
-        <a-form-model-item label="是否为管理员">
-          <!--此处无需v-model双向绑定，数据的更新可用change回调函数完成-->
-          <a-select
-            :default-value="userEdit.role"
-            style="width: 120px"
-            @change="editUserRoleChange"
-          >
-            <a-select-option
-              key="1"
-              :value="1"
-            >管理员</a-select-option>
-            <a-select-option
-              key="2"
-              :value="2"
-            >订阅者</a-select-option>
-          </a-select>
+          <a-input-password v-model="resetPass.checkPass"></a-input-password>
         </a-form-model-item>
       </a-form-model>
     </a-modal>
@@ -275,6 +244,7 @@ export default {
   name: "AdminIndex",
 
   data() {
+    //密码 校验器
     let validatePass = (rule, value, callback) => {
       if (value == "") {
         callback(new Error("密码不得为空"));
@@ -291,6 +261,16 @@ export default {
       if (value === "") {
         callback(new Error("请再次输入密码"));
       } else if (value !== this.userInfo.password) {
+        callback(new Error("两次输入不匹配!"));
+      } else {
+        callback();
+      }
+    };
+    //重置密码确认框 校验器（因为要校验来自不同模型的数据，userInfo{} -> resetPass{}）
+    let validateResetPass2 = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value !== this.resetPass.password) {
         callback(new Error("两次输入不匹配!"));
       } else {
         callback();
@@ -314,6 +294,7 @@ export default {
       //visible: false, //视频说这是删除确认的visible属性。但是官方示例中没有。实测删除后也无影响
       addUserVisible: false, //隐藏/浮现添加用户弹框
       editUserVisible: false, //隐藏/浮现编辑用户弹框
+      resetPassVisible: false, //隐藏/浮现重置密码弹框
 
       //分页器配置
       pagination: {
@@ -346,7 +327,12 @@ export default {
         checkPass: "",
         role: 0,
       },
-
+      resetPass: {
+        id: 0,
+        username: "",
+        password: "",
+        checkPass: "",
+      },
       //添加&编辑用户弹框文本宽度和控件宽度
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -369,6 +355,11 @@ export default {
         ],
         password: [{ validator: validatePass, trigger: "change" }],
         checkPass: [{ validator: validatePass2, trigger: "change" }],
+      },
+      //重置密码弹框表单验证
+      resetPassRules: {
+        password: [{ validator: validatePass, trigger: "change" }],
+        checkPass: [{ validator: validateResetPass2, trigger: "change" }],
       },
     };
   },
@@ -554,12 +545,41 @@ export default {
     },
     //==========================================
     // 重置密码按钮
-    resetPassword(id) {
+    resetPassword(data) {
+      //1.将 data 导入v-model数据模型
+      this.resetPass.id = data.ID;
+      this.resetPass.username = data.username;
+      // this.resetPass.password = data.password;//不需要传来旧密码
+
+      //2.打开弹框
+      this.resetPassVisible = true;
+    },
+    handleResetPassOK() {
       /*
-      密码安全校验（配合 rules 使用）
       获取数据向后端发送 PUT 请求
       $message.error()/success()
       */
+
+      //1.密码安全校验（配合 resetPassRules 使用）
+      this.$refs.resetPassRef.validate(async (valid) => {
+        if (!valid) return this.$message.error("密码有误，请重新输入！");
+
+        const res = await this.$axios.put(`user/resetpw/${this.resetPass.id}`, {
+          password: this.resetPass.password,
+        });
+
+        if (res.status !== 200) return this.$message.error(res.message);
+
+        this.resetPassVisible = false; //关闭弹窗
+        this.$refs.resetPassRef.resetFields();
+        this.$message.success("修改用户密码成功"); //成功提示
+        this.getUserList(); //数据更新后要及时刷新
+      });
+    },
+    handleResetPassCancel() {
+      this.resetPassVisible = false;
+      this.$refs.resetPassRef.resetFields();
+      this.$message.info("已取消密码重置");
     },
   },
 };
