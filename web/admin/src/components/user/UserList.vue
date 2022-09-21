@@ -31,17 +31,17 @@
         rowKey="ID"
         @change="handleTableChange"
       >
-        <!--↓↓↓范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<a-table>早已用columns[]所定义的key指定具名插槽↓↓↓------------------------------------------------->
-        <!--1.【组件传值：父→子】“管理员”/“订阅者” 这两个数据是属于 父组件UserList.vue 的，想传给子组件显示。使用具名插槽slot 和子组件<a-table>的columns[] 定义的 scopedSlots 所声明的具名插槽值一致 -->
-        <!--2.【组件传值：子→父】当前行的role值是 子组件<a-table> 用自己的 dataSource 得到的，想传给父组件（用于验证）。使用slot-scoped 在父组件调用时产生一个接收数据的接口 -->
+        <!--↓↓↓范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<Col> 早已用columns[]所定义的key指定具名插槽↓↓↓------------------------------------------------->
 
+        <!--1.【组件传值：父→子】“管理员”/“订阅者” 这两个数据是属于 父组件<a-table> 的，想传给子组件其中一列<Col>显示。此处使用具名插槽 slot 和子组件<Col>的 scopedSlots 所声明的具名插槽值一致 -->
+        <!--2.【组件传值：子→父】当前行的role值来自子组件<Col>，想传给 父组件<a-table>（用于验证）。使用slot-scoped 在父组件<a-table>调用时产生一个接收数据的接口 -->
         <span
           slot="role"
           slot-scope="role"
         >{{role==1?'管理员':'订阅者'}}</span>
 
-        <!--1.【组件传值：父→子】UserList.vue调用 <a-table> ,在两处约定具名插槽 "action" ，将<template>内的两个按钮元素传到“操作”一列-->
-        <!--2.【组件传值：子→父】经过console 打印测试，可得知data是子组件 <a-table> 的返回数据-->
+        <!--1.【组件传值：父→子】父组件：<a-table>；子组件：<Col>。在两处约定具名插槽 "action" ，将<template>内的 3 个按钮元素传到“操作”一列-->
+        <!--2.【组件传值：子→父】子组件<Row> 返回给父组件 <a-table> 的返回数据，父组件 <a-table>用自定义的 data 变量名接收-->
 
         <template
           slot="action"
@@ -63,7 +63,7 @@
             <a-button @click="resetPassword(data)">重置密码</a-button>
           </div>
         </template>
-        <!--↑↑↑范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<a-table>早已用columns[]所定义的key指定具名插槽↑↑↑------------------------------------------------->
+        <!--↑↑↑范围内是父组件 => 子组件的数据，父组件应该用slot表明数据要传入子组件的哪个部分；而子组件<Col>早已用columns[]所定义的key指定具名插槽↑↑↑------------------------------------------------->
       </a-table>
       <!--/表单部分-->
     </a-card>
@@ -327,6 +327,7 @@ export default {
         checkPass: "",
         role: 0,
       },
+      //重置用户密码弹框绑定的数据对象
       resetPass: {
         id: 0,
         username: "",
@@ -555,19 +556,16 @@ export default {
       this.resetPassVisible = true;
     },
     handleResetPassOK() {
-      /*
-      获取数据向后端发送 PUT 请求
-      $message.error()/success()
-      */
-
       //1.密码安全校验（配合 resetPassRules 使用）
       this.$refs.resetPassRef.validate(async (valid) => {
         if (!valid) return this.$message.error("密码有误，请重新输入！");
 
+        //2.获取数据向后端发送 PUT 请求
         const res = await this.$axios.put(`user/resetpw/${this.resetPass.id}`, {
           password: this.resetPass.password,
         });
 
+        //3.消息提示和清理工作
         if (res.status !== 200) return this.$message.error(res.message);
 
         this.resetPassVisible = false; //关闭弹窗
