@@ -91,7 +91,7 @@ func EditUser(c *gin.Context) {
 
 	var user model.User
 	c.ShouldBindJSON(&user)
-	code := model.CheckUpdateUser(id,user.Username)
+	code := model.CheckUpdateUser(id, user.Username)
 
 	if code == errmsg.SUCCESS {
 		model.EditUser(&user, id) //实际上只能改 username 和 role
@@ -101,6 +101,21 @@ func EditUser(c *gin.Context) {
 		fmt.Println("ERROR_USERNAME_USED")
 		c.Abort()
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
+
+// ResetPass 重置用户密码
+func ResetPass(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var user model.User
+
+	c.ShouldBindJSON(&user)
+
+	code := model.ResetPass(id, &user)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,

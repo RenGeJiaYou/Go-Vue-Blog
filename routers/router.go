@@ -23,6 +23,7 @@ func InitRouter() {
 	{
 		//user 的路由接口
 		auth.PUT("user/:id", v1.EditUser) //:id 意为 前端axios会把“user/”后面的任何一个数据视为c.Param 的一个键值对，并且 key 为id，value为实际的数据（实际传入该数据时不用加":")
+		auth.PUT("user/resetpw/:id", v1.ResetPass)
 		auth.DELETE("user/:id", v1.DeleteUser)
 
 		//article 的路由接口

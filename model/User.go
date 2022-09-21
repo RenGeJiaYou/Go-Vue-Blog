@@ -131,6 +131,20 @@ func EditUser(user *User, id int) int {
 	return errmsg.SUCCESS
 }
 
+// ResetPass 重置用户密码
+func ResetPass(id int, u *User) int {
+	/*原生SQL:
+	UPDATE user set password = hashedPassword
+	WHERE ID = id
+	*/
+	EncryptedPassword := ScryptPw(u.Password)
+	err := db.Model(&u).Where("id = ?", id).Update("password", EncryptedPassword).Error
+	if err != nil {
+		return errmsg.ERROR_PASSWORD_WRONG
+	}
+	return errmsg.SUCCESS
+}
+
 // DeleteUser 删除用户 不必考虑判空，因为前端一定是在一个条目上删除，不可能空。
 // Param id int			用户ID
 // Return code int		状态码
@@ -161,9 +175,10 @@ func ScryptPw(password string) string {
 	return base64.StdEncoding.EncodeToString(HashPw)
 }
 
-// BeforeSave 钩子函数，在数据存入数据库前哈希密码
+// BeforeSave 钩子函数，在数据存入数据库前哈希密码 & 权限控制
 func (u *User) BeforeSave(_ *gorm.DB) error {
 	u.Password = ScryptPw(u.Password)
+	u.Role = 2
 	return nil
 }
 
