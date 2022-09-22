@@ -30,7 +30,7 @@ func AddArt(c *gin.Context) {
 // GetCateArt todo 查询某个分类下所有文章
 func GetCateArt(c *gin.Context) {
 	//从请求报文的 params 提取数据
-	cid, _ := strconv.Atoi(c.Param("cid"))			// 巩固Param() 和 Query() 的区别
+	cid, _ := strconv.Atoi(c.Param("cid")) // 巩固Param() 和 Query() 的区别
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
 	pageNum, _ := strconv.Atoi(c.Query("pagenum"))
 	fmt.Println(cid, pageSize, pageNum)
@@ -101,8 +101,8 @@ func EditArt(c *gin.Context) {
 	code := model.EditArt(&art, id)
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": code,
-		"message":    errmsg.GetErrMsg(code),
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
 	})
 }
 
@@ -112,8 +112,8 @@ func DeleteArt(c *gin.Context) {
 	code := model.DeleteArt(id)
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": code,
-		"message":    errmsg.GetErrMsg(code),
-		"delete": "i am delete",
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+		"delete":  "i am delete",
 	})
 }

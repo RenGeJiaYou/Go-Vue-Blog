@@ -37,6 +37,7 @@ func GetCategories(c *gin.Context) {
 	//从请求报文的 params 提取数据
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
 	pageNum, _ := strconv.Atoi(c.Query("pagenum"))
+	name := c.Query("name")
 
 	if pageSize == 0 {
 		pageSize = -1 //GORM 的Limit(-1) 表示不要 Limit() 这个限制
@@ -46,7 +47,7 @@ func GetCategories(c *gin.Context) {
 	}
 
 	//查询数据库
-	cates, total := model.GetCategories(pageSize, pageNum)
+	cates, total := model.GetCategories(name, pageSize, pageNum)
 
 	//返回数据
 	c.JSON(http.StatusOK, gin.H{
@@ -58,7 +59,6 @@ func GetCategories(c *gin.Context) {
 }
 
 // EditCategory 编辑分类
-// TODO 前端部分，在编辑时显示×号，退出编辑×号消失
 func EditCategory(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
@@ -79,8 +79,8 @@ func EditCategory(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": code,
-		"message":    errmsg.GetErrMsg(code),
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
 	})
 }
 
@@ -90,8 +90,8 @@ func DeleteCate(c *gin.Context) {
 	code := model.DeleteCate(id)
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": code,
-		"message":    errmsg.GetErrMsg(code),
-		"delete": "i am delete",
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+		"delete":  "i am delete",
 	})
 }

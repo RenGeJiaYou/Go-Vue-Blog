@@ -88,23 +88,23 @@ func GetUsers(username string, pageSize int, pageNum int) ([]User, int64) {
 	var user User
 	var users []User
 	var total int64
-
-	//非搜索行为
+	var err error
 	if username == "" {
+		//非搜索行为
 		err = db.
 			Find(&users).
 			Limit(pageSize).
 			Offset((pageNum - 1) * pageSize).Error
 		db.Model(&user).Count(&total)
+	} else {
+		//搜索行为（Count()要在 Limit()/Offset() 之前，否则报错）
+		err = db.
+			Where("username LIKE ?", username+"%").
+			Find(&users).
+			Count(&total).
+			Limit(pageSize).
+			Offset((pageNum - 1) * pageSize).Error
 	}
-
-	//搜索行为（Count()要在 Limit()/Offset() 之前，否则报错）
-	err := db.
-		Where("username LIKE ?", username+"%").
-		Find(&users).
-		Count(&total).
-		Limit(pageSize).
-		Offset((pageNum - 1) * pageSize).Error
 
 	if err == gorm.ErrRecordNotFound {
 		fmt.Println("查找用户列表失败： ", err)
