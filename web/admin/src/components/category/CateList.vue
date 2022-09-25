@@ -206,7 +206,6 @@ export default {
 
   methods: {
     //获取列表数据(囊括带搜索条件&&无搜索条件)
-    // @@重构tip,@search 提供了一个回调函数(value,event)，包含了搜索值，试试能不能用
     async getCateList() {
       //将所接收数据的data部分赋给res.
       const { data: res } = await this.$axios.get("categories", {

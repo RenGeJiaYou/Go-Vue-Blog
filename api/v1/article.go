@@ -27,7 +27,7 @@ func AddArt(c *gin.Context) {
 
 }
 
-// GetCateArt todo 查询某个分类下所有文章
+// GetCateArt  查询某个分类下所有文章
 func GetCateArt(c *gin.Context) {
 	//从请求报文的 params 提取数据
 	cid, _ := strconv.Atoi(c.Param("cid")) // 巩固Param() 和 Query() 的区别
@@ -51,7 +51,7 @@ func GetCateArt(c *gin.Context) {
 	})
 }
 
-// GetArt 查询单个文章 todo 按标题查
+// GetArt 查询单个文章
 func GetArt(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	art, code := model.GetArt(id)
@@ -63,11 +63,17 @@ func GetArt(c *gin.Context) {
 	})
 }
 
+// SearchArt 按标题查找文章
+func SearchArt(c *gin.Context) {
+
+}
+
 // GetArts 查询文章列表
 func GetArts(c *gin.Context) {
 	//从请求报文的 params 提取数据
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
 	pageNum, _ := strconv.Atoi(c.Query("pagenum"))
+	title := c.Query("title")
 
 	if pageSize == 0 {
 		pageSize = -1 //GORM 的Limit(-1) 表示不要 Limit() 这个限制
@@ -77,7 +83,7 @@ func GetArts(c *gin.Context) {
 	}
 
 	//查询数据库
-	arts, code, total := model.GetArts(pageSize, pageNum)
+	arts, code, total := model.GetArts(title, pageSize, pageNum)
 
 	//返回数据
 	c.JSON(http.StatusOK, gin.H{

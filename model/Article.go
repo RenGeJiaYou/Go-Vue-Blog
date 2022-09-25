@@ -15,7 +15,7 @@ type Article struct {
 	Cid      int      `gorm:"type:int;not null" json:"cid"`
 	Desc     string   `gorm:"type:varchar(200)" json:"desc"`
 	Content  string   `gorm:"type:longtext;not null" json:"content"`
-	Image    string   `gorm:"type:varchar(100);not null" json:"image"`
+	Image    string   `gorm:"type:varchar(100);not null" json:"image"` //Image 本体实际上存储在七牛云空间，MySQL 存储的是该文件的url地址
 }
 
 // CreateArt 添加文章
@@ -34,10 +34,10 @@ func GetCateArt(cid int, pageSize int, pageNum int) ([]Article, int, int64) {
 	var total int64
 	err := db.
 		Preload("Category").
-		Limit(pageSize).
-		Offset((pageNum-1)*pageSize).
 		Where("cid = ?", cid).
 		Find(&cateArt).
+		Limit(pageSize).
+		Offset((pageNum-1)*pageSize).
 		Error
 
 	//记录总数。Model() 不仅仅能传已经定义好的go struct 对象，也包括某次查询的视图
@@ -72,17 +72,31 @@ func GetArt(id int) (Article, int) {
 }
 
 // GetArts 获取文章列表
-func GetArts(pageSize int, pageNum int) ([]Article, int, int64) {
+func GetArts(title string, pageSize int, pageNum int) ([]Article, int, int64) {
 	var articles []Article
 	var total int64
+	var err error
 
-	err := db.
-		Preload("Category").
-		Find(&articles).
-		Count(&total).
-		Limit(pageSize).
-		Offset((pageNum - 1) * pageSize).Error
-	if err != nil {
+	if title == "" {
+		//非搜索分支
+		err = db.
+			Preload("Category").
+			Find(&articles).
+			Count(&total).
+			Limit(pageSize).
+			Offset((pageNum - 1) * pageSize).Error
+	} else {
+		//搜索分支
+		err = db.
+			Preload("Category").
+			Where("title LIKE ?", title+"%").
+			Find(&articles).
+			Count(&total).
+			Limit(pageSize).
+			Offset((pageNum - 1) * pageSize).Error
+	}
+
+	if err != nil || err == gorm.ErrRecordNotFound {
 		fmt.Println("查找用户列表失败： ", err)
 		return nil, errmsg.ERROR_ART_NOT_EXIST, 0
 	}
