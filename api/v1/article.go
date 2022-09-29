@@ -63,11 +63,6 @@ func GetArt(c *gin.Context) {
 	})
 }
 
-// SearchArt 按标题查找文章
-func SearchArt(c *gin.Context) {
-
-}
-
 // GetArts 查询文章列表
 func GetArts(c *gin.Context) {
 	//从请求报文的 params 提取数据

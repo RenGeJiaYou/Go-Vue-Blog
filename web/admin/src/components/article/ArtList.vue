@@ -17,7 +17,7 @@
           <a-button
             type="primary"
             @click="handleAddArt"
-          >写新文章</a-button>
+          >写文章</a-button>
         </a-col>
 
         <a-col :span="8">
@@ -66,7 +66,7 @@
           <div class="actionSlot">
             <a-button
               type="primary"
-              @click="editArt(data)"
+              @click="$router.push(`/admin/addart/${data.ID}`)"
               style="margin-right: 15px"
             >编辑</a-button>
 
@@ -325,41 +325,12 @@ export default {
       });
     },
     //==========================================
-    //[!]添加文章弹窗 确认按钮
-    handleAddArtOK() {
-      //在 validate 中完成全部操作
-      this.$refs.addArtRef.validate(async (valid) => {
-        if (!valid) return this.$message.error("未通过验证，请重新填写"); //回调函数的实现总要写 return
-        //axios 调用API
-        const { data: res } = await this.$axios.post("article/add", {
-          title: this.articleInfo.title,
-          password: this.articleInfo.password,
-          role: this.articleInfo.role,
-        });
-        if (res.status !== 200) return this.$message.error(res.message);
-
-        this.addArtVisible = false; //关闭弹窗
-        this.$refs.addArtRef.resetFields(); //清空数据。组件提供的方法可通过ref的方式调用
-        this.$message.success("添加文章成功"); //成功提示
-        this.getArtList(); //数据更新后要及时刷新
+    //新建文章,仅仅是跳转页面
+    handleAddArt() {
+      this.$router.push("/admin/addart").catch((err) => {
+        console.log(err);
       });
     },
-    //[!]添加文章弹窗 取消按钮
-    handleAddArtCancel() {
-      //清空 model{} 中废弃的数据
-
-      this.addArtVisible = false;
-      this.$refs.addArtRef.resetFields();
-      this.$message.info("已取消添加");
-    },
-    //[!]添加文章弹窗 "是否为管理员"多选框变更事件
-    addArtRoleChange(val) {
-      //将更新后的值传到 articleInfo 中，以待传到后端
-      this.articleInfo.role = val;
-      console.log(this.articleInfo.role);
-    },
-    //[!]全新的新建文章
-    handleAddArt() {},
     //==========================================
     //[!]编辑文章按钮
     editArt(data) {
@@ -403,11 +374,6 @@ export default {
       this.editArtVisible = false;
       // this.$refs.editArtRef.resetFields();//无需清空数据，反正每次点击编辑都会重新加载数据
       this.$message.info("已取消编辑");
-    },
-    //[!]编辑文章弹窗 "是否为管理员"多选框变更事件
-    editArtRoleChange(val) {
-      //将更新后的值传到 articleInfo 中，以待传到后端
-      this.articleEdit.role = val;
     },
     //==========================================
   },
