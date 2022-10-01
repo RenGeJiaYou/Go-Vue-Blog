@@ -64,6 +64,7 @@
           slot-scope="data"
         >
           <div class="actionSlot">
+            <!--push()中的字符串，如果首位是'/'，将定位到绝对路径-->
             <a-button
               type="primary"
               @click="$router.push(`/admin/addart/${data.ID}`)"

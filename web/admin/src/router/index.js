@@ -26,7 +26,7 @@ const routes = [
     path: "/admin",
     name: "admin",
     component: Admin,
-    //子路由的path 如果写'/'将会定位到根路径
+    //子路由的path 如果前面写'/'将会定位到根路径
     children: [
       {
         path: "index",
@@ -37,12 +37,12 @@ const routes = [
         component: AddArt,
       },
       {
-        path: "addart/:id",
+        path: "addart/:id", //添加、编辑文章
         component: AddArt,
         props: true,
       },
       {
-        path: "artlist",
+        path: "artlist", //文章列表
         component: Artlist,
       },
       {

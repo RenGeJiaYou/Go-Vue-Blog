@@ -195,6 +195,7 @@ export default {
         if (valid) {
           if (artId) {
             //编辑文章
+            console.log("artId: " + artId + "进入编辑分支  ");
             const { data: res } = await this.$axios.put(
               `article/${artId}`,
               this.artInfo
@@ -203,9 +204,10 @@ export default {
               return this.$message.error("编辑文章失败： " + res.message);
 
             this.$message.success("编辑文章成功");
-            this.$router.push("artlist");
+            this.$router.push("/admin/artlist"); //加单斜杠表示要求为绝对路径
           } else {
             //添加文章
+            console.log("artId: " + artId + "进入添加分支  ");
             const { data: res } = await this.$axios.post(
               "article/add",
               this.artInfo
@@ -222,11 +224,17 @@ export default {
 
     //取消发布按钮
     handleCancel() {
-      //清空不再需要的数据
-      this.$refs.artInfoRef.resetFileds();
+      console.log("handleCancel被调用？");
+      //仅在「新增文章」取消时，清空不再需要的数据
+      if (this.id) {
+        this.$message.info("取消更新文章");
+      } else {
+        this.$refs.artInfoRef.resetFileds();
+        this.$message.info("取消发布文章");
+      }
 
       //跳转回文章列表
-      this.$router.push("artlist");
+      this.$router.push("/admin/artlist");
     },
   },
 };
