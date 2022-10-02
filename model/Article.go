@@ -80,20 +80,24 @@ func GetArts(title string, pageSize int, pageNum int) ([]Article, int, int64) {
 	if title == "" {
 		//非搜索分支
 		err = db.
+			Order("Created_At DESC").
 			Preload("Category").
 			Find(&articles).
-			Count(&total).
 			Limit(pageSize).
 			Offset((pageNum - 1) * pageSize).Error
+		db.Model(&articles).Count(&total)
 	} else {
 		//搜索分支
 		err = db.
+			Order("Created_At DESC").
 			Preload("Category").
 			Where("title LIKE ?", title+"%").
 			Find(&articles).
-			Count(&total).
 			Limit(pageSize).
 			Offset((pageNum - 1) * pageSize).Error
+		db.Model(&articles).
+			Where("title LIKE ?", title+"%").
+			Count(&total)
 	}
 
 	if err != nil || err == gorm.ErrRecordNotFound {
