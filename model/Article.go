@@ -78,7 +78,7 @@ func GetArts(title string, pageSize int, pageNum int) ([]Article, int, int64) {
 	var err error
 
 	if title == "" {
-		//非搜索分支
+		// 非搜索分支
 		err = db.
 			Order("Created_At DESC").
 			Preload("Category").
@@ -87,7 +87,7 @@ func GetArts(title string, pageSize int, pageNum int) ([]Article, int, int64) {
 			Offset((pageNum - 1) * pageSize).Error
 		db.Model(&articles).Count(&total)
 	} else {
-		//搜索分支
+		// 搜索分支
 		err = db.
 			Order("Created_At DESC").
 			Preload("Category").

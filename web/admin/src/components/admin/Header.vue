@@ -23,7 +23,7 @@ export default {
 <style scoped>
 .headerBtn {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
 }
 </style>
