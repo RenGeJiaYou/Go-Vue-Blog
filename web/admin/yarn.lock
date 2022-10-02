@@ -1624,6 +1624,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tinymce/tinymce-vue@npm:3.2.2":
+  version: 3.2.2
+  resolution: "@tinymce/tinymce-vue@npm:3.2.2"
+  peerDependencies:
+    vue: ^2.4.3
+  checksum: 91dbfacef5773ef3b5a1fc7449edf6b4d545ea6002995ce2d58c226b2689b276f5b09e001b1e47198e9a6a64663ad36b2b555dd8472c68725b3f8fc13023af45
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:2":
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
@@ -2494,6 +2503,7 @@ __metadata:
   dependencies:
     "@babel/core": ^7.12.16
     "@babel/eslint-parser": ^7.12.16
+    "@tinymce/tinymce-vue": 3.2.2
     "@vue/cli-plugin-babel": ~5.0.0
     "@vue/cli-plugin-eslint": ~5.0.0
     "@vue/cli-plugin-router": ~5.0.0

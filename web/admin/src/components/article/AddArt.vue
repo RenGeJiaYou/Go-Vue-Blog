@@ -71,10 +71,10 @@
           label="文章内容"
           prop="content"
         >
-          <a-input
+          <Editor
             v-model="artInfo.content"
             placeholder="后面 input 标签会改成富文本编辑器"
-          ></a-input>
+          ></Editor>
         </a-form-model-item>
 
         <a-form-model-item>
@@ -93,31 +93,25 @@
   
 <script>
 import { Url } from "../../plugin/axios";
+import Editor from "../editor/editor.vue";
 
 export default {
   name: "AdminIndex",
-
   props: ["id"],
-
   data() {
     return {
       artInfo: {
         id: 0,
         title: "",
-        cid: undefined, //若不希望默认值或初始化时显示一个 0 / "",使用 undefined 消除影响
+        cid: undefined,
         desc: "",
         content: "",
         image: "",
       },
-
-      cateList: [], //分类列表
-
-      uploadUrl: Url + "upload", //上传 url
-
-      headers: {}, //请求头
-
-      fileList: [], //上传文件列表
-
+      cateList: [],
+      uploadUrl: Url + "upload",
+      headers: {},
+      fileList: [],
       rules: {
         //表单验证
         title: [
@@ -137,7 +131,6 @@ export default {
       },
     };
   },
-
   mounted() {
     this.getCateList();
     this.headers = {
@@ -148,31 +141,24 @@ export default {
       this.getArtInfo(this.id);
     }
   },
-
   methods: {
     //查询全部分类。编辑文章时，必须已加载全部标签。
     async getCateList() {
       //将所接收数据的data部分赋给res.
       const { data: res } = await this.$axios.get("categories");
-
       if (res.status != 200) return this.$message.error(res.message);
-
       //确认无误，保存返回结果
       this.cateList = res.data;
     },
-
     //将待编辑文章传入对应模型
     async getArtInfo(id) {
       const { data: res } = await this.$axios.get(`article/info/${id}`);
       if (res.status != 200) return this.$message.error(res.message);
-
       (this.artInfo = res.data),
         (this.artInfo.id = res.data.ID),
         console.log(this.artInfo);
     },
-
     //v-model 已经双向绑定artInfo.cid,不需要写 a-select 组件的 @change
-
     //上传图片操作
     handleUpload(info) {
       console.table(info);
@@ -181,14 +167,12 @@ export default {
       }
       if (info.file.status === "done") {
         this.$message.success(`${info.file.name} 文件上传成功`);
-
         this.artInfo.image = info.file.response.url; //保存图片的外链地址
       } else if (info.file.status === "error") {
         this.$message.error(`${info.file.name} 文件上传失败`);
         this.$message.error(this.uploadUrl);
       }
     },
-
     //发布文章操作
     handleSubmit(artId) {
       this.$refs.artInfoRef.validate(async (valid) => {
@@ -202,7 +186,6 @@ export default {
             );
             if (res.status != 200)
               return this.$message.error("编辑文章失败： " + res.message);
-
             this.$message.success("编辑文章成功");
             this.$router.push("/admin/artlist"); //加单斜杠表示要求为绝对路径
           } else {
@@ -214,14 +197,12 @@ export default {
             );
             if (res.status != 200)
               return this.$message.error("新增文章失败： " + res.message);
-
             this.$message.success("新增文章成功");
             this.$router.push("artlist");
           }
         }
       });
     },
-
     //取消发布按钮
     handleCancel() {
       console.log("handleCancel被调用？");
@@ -232,11 +213,11 @@ export default {
         this.$refs.artInfoRef.resetFileds();
         this.$message.info("取消发布文章");
       }
-
       //跳转回文章列表
       this.$router.push("/admin/artlist");
     },
   },
+  components: { Editor },
 };
 </script>
   
