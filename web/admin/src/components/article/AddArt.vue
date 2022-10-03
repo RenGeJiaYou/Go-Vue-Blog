@@ -7,7 +7,7 @@
         :model="artInfo"
         :rules="rules"
         ref="artInfoRef"
-        hideRequiredMark="true"
+        :hideRequiredMark="true"
       >
         <a-form-model-item
           label="文章标题"
