@@ -159,6 +159,7 @@ export default {
         console.log(this.artInfo);
     },
     //v-model 已经双向绑定artInfo.cid,不需要写 a-select 组件的 @change
+
     //上传图片操作
     handleUpload(info) {
       console.table(info);
@@ -179,7 +180,7 @@ export default {
         if (valid) {
           if (artId) {
             //编辑文章
-            console.log("artId: " + artId + "进入编辑分支  ");
+            // console.log("artId: " + artId + "进入编辑分支  ");
             const { data: res } = await this.$axios.put(
               `article/${artId}`,
               this.artInfo
@@ -187,10 +188,10 @@ export default {
             if (res.status != 200)
               return this.$message.error("编辑文章失败： " + res.message);
             this.$message.success("编辑文章成功");
-            this.$router.push("/admin/artlist"); //加单斜杠表示要求为绝对路径
+            this.$router.push("/artlist"); //加单斜杠表示要求为绝对路径
           } else {
             //添加文章
-            console.log("artId: " + artId + "进入添加分支  ");
+            // console.log("artId: " + artId + "进入添加分支  ");
             const { data: res } = await this.$axios.post(
               "article/add",
               this.artInfo
@@ -198,7 +199,7 @@ export default {
             if (res.status != 200)
               return this.$message.error("新增文章失败： " + res.message);
             this.$message.success("新增文章成功");
-            this.$router.push("artlist");
+            this.$router.push("/artlist");
           }
         }
       });
@@ -214,7 +215,7 @@ export default {
         this.$message.info("取消发布文章");
       }
       //跳转回文章列表
-      this.$router.push("/admin/artlist");
+      this.$router.push("/artlist");
     },
   },
   components: { Editor },

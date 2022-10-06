@@ -67,7 +67,7 @@
             <!--push()中的字符串，如果首位是'/'，将定位到绝对路径-->
             <a-button
               type="primary"
-              @click="$router.push(`/admin/addart/${data.ID}`)"
+              @click="$router.push(`/addart/${data.ID}`)"
               style="margin-right: 15px"
             >编辑</a-button>
 
@@ -328,12 +328,12 @@ export default {
     //==========================================
     //新建文章,仅仅是跳转页面
     handleAddArt() {
-      this.$router.push("/admin/addart").catch((err) => {
+      this.$router.push("/addart").catch((err) => {
         console.log(err);
       });
     },
     //==========================================
-    //[!]编辑文章按钮
+    //编辑文章按钮
     editArt(data) {
       // console.log(data); //data包含了当前行所有数据
 
@@ -348,7 +348,7 @@ export default {
 
       //3.此时文章编辑，修改数据。响应式地更新到模型里
     },
-    //[!]编辑文章弹窗 确认按钮
+    //编辑文章弹窗 确认按钮
     handleEditArtOK() {
       //在 validate 中完成全部操作
       this.$refs.editArtRef.validate(async (valid) => {

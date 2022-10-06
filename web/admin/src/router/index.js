@@ -14,16 +14,12 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/",
-    redirect: "/login", //重定向到"/index"这条路由项
-  },
-  {
     path: "/login",
     name: "login",
     component: Login,
   },
   {
-    path: "/admin",
+    path: "/",
     name: "admin",
     component: Admin,
     //子路由的path 如果前面写'/'将会定位到根路径

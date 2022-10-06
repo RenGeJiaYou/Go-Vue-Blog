@@ -67,9 +67,9 @@ export default {
       //item      是当前所点击对象的引用
       //key       item 所绑定的 key 值.注意：在<template>中item 的 key 一定和 router 的 path 保持一致
       //keyPath   一个数组，记录父子项的所有key。index越大辈分越大。如点击《文章列表》0: "getArts" 1: "article"
-      console.log(item, key, keyPath);
+      // console.log(item, key, keyPath);
 
-      this.$router.push("/admin/" + item.key).catch((err) => {
+      this.$router.push("/" + item.key).catch((err) => {
         console.log(err);
       });
     },

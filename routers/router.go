@@ -18,6 +18,16 @@ func InitRouter() {
 	r.Use(gin.Recovery())
 	r.Use(middleware.Cors())
 
+	//前端资源托管(pattern 参数 从项目根目录开始)
+	r.LoadHTMLGlob("static/admin/index.html")
+	//第1个参数是路由的路径，第2个参数是文件的路径
+	r.Static("admin/static","static/admin/static")
+	//在浏览器地址栏输入localhost:<socket>/admin 即可访问Vue Router设置 path 为 '/' 的 component
+	r.GET("admin", func(c *gin.Context) {
+		c.HTML(200,"index.html",nil)
+
+	})
+
 	auth := r.Group("api/v1")
 	auth.Use(middleware.JwtToken())
 	{

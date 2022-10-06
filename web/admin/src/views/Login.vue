@@ -123,7 +123,7 @@ export default {
               //将token 放到本地存储.session 在关闭浏览器后将清空token
               // window.sessionStorage.setItem("token", res.token);
               window.localStorage.setItem("token", res.token);
-              this.$router.push("/admin/index");
+              this.$router.push("/index");
             }
           } catch (err) {
             console.log(err);

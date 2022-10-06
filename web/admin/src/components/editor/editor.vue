@@ -64,7 +64,7 @@ export default {
           failure(this.$message.error("tinymce 中上传图片失败"));
         },
         imagetools_cors_hosts: ["*"],
-        imagetools_proxy: "",
+        imagetools_proxy: "*",
       },
       // 接收来自 AddArt.vue 的文本内容，并让<Editor>组件双向绑定该内容
       content: this.value,
