@@ -1,4 +1,5 @@
 <template>
+  <!--关于v-app、v-main、app 属性等，参见 https://vuetifyjs.com/zh-Hans/features/layouts/-->
   <v-app app>
     <TopBar></TopBar>
     <v-main>
