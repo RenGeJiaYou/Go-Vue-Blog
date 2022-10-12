@@ -14,9 +14,9 @@
         >
           {{ new Date().getFullYear() }} —
           <strong>Go & Vue Blog Project</strong>
-          <thin>
-            <br />Powered by Shi Jiajun
-          </thin>
+
+          <br />
+Powered by Shi Jiajun
         </v-col>
       </v-row>
     </v-footer>

@@ -10,7 +10,16 @@
       ></v-avatar>
       <!--见文档 样式与动画-间距-->
       <v-container class="py-2 fill-height">
-        <v-btn elevation="12"></v-btn>
+        <v-btn
+          text
+          color="white"
+        >首页</v-btn>
+        <v-btn
+          v-for="item in cateList"
+          :key="item.id"
+          text
+          color="white"
+        >{{item.name}}</v-btn>
       </v-container>
 
       <!-- 该标签会将前后的元素推向其父容器的两侧 -->
@@ -51,7 +60,7 @@ export default {
     //获取分类
     async getCateList() {
       const { data: res } = await this.$axios.get("categories");
-      this.cateList = res;
+      this.cateList = res.data.slice(0, 8); //标签先只要一部分，顶端栏放不下了。
     },
   },
 };
