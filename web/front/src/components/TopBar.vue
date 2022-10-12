@@ -13,6 +13,7 @@
         <v-btn elevation="12"></v-btn>
       </v-container>
 
+      <!-- 该标签会将前后的元素推向其父容器的两侧 -->
       <v-spacer></v-spacer>
 
       <v-responsive
@@ -27,6 +28,7 @@
           dark
           rounde
           placeholder
+          clearable
         ></v-text-field>
       </v-responsive>
     </v-app-bar>
@@ -37,11 +39,20 @@
 export default {
   name: "TopBar",
   data() {
-    return {};
+    return {
+      //分类列表
+      cateList: [],
+    };
   },
-  created() {},
+  created() {
+    this.getCateList();
+  },
   methods: {
     //获取分类
+    async getCateList() {
+      const { data: res } = await this.$axios.get("categories");
+      this.cateList = res;
+    },
   },
 };
 </script>
