@@ -36,7 +36,7 @@
           solo-inverted
           dark
           rounde
-          placeholder
+          placeholder="搜索文章"
           clearable
         ></v-text-field>
       </v-responsive>
