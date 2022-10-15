@@ -57,7 +57,7 @@
           <v-list-item-icon>
             <v-icon>{{'mdi-github'}}</v-icon>
           </v-list-item-icon>
-          <v-list-item-content class="grey-text">1178972961</v-list-item-content>
+          <v-list-item-content class="grey-text">123456789</v-list-item-content>
         </v-list-item>
       </v-list>
     </v-img>
