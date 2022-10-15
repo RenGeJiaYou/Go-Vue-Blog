@@ -22,11 +22,14 @@
 
       <!-- text 展示个人介绍 -->
       <v-col class="au">
-        <div>关于作者:</div>
+        <div class="ma-3">关于作者:</div>
+        <div class="ma-3">电子信息研究生在读</div>
+        <div class="ma-3">一名 Java、Go、JS 开发者，对任何新技术永远抱有热情与求知欲</div>
       </v-col>
 
       <v-divider></v-divider>
 
+      <!-- v-list 的默认白色背景会覆盖掉图片背景 -->
       <v-list
         dense
         nav
@@ -35,7 +38,26 @@
           <v-list-item-icon>
             <v-icon>{{'mdi-qqchat'}}</v-icon>
           </v-list-item-icon>
-          <v-list-item-content>1178972961</v-list-item-content>
+          <v-list-item-content class="grey-text">123456789</v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>{{'mdi-sina-weibo'}}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content class="grey-text">123456789</v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>{{'mdi-email'}}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content class="grey-text">123456789@outlook.com</v-list-item-content>
+        </v-list-item>
+
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>{{'mdi-github'}}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content class="grey-text">1178972961</v-list-item-content>
         </v-list-item>
       </v-list>
     </v-img>

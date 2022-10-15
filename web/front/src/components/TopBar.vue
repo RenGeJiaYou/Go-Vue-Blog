@@ -13,6 +13,7 @@
         <v-btn
           text
           color="white"
+          @click="$router.push('/')"
         >首页</v-btn>
         <v-btn
           v-for="item in cateList"

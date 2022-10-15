@@ -16,7 +16,7 @@
             <v-sheet
               rounded="lg"
               elevation="5"
-              min-height="80vh"
+              min-height="85vh"
             >
               <router-view></router-view>
             </v-sheet>
