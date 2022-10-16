@@ -61,7 +61,7 @@ export default {
     //获取分类
     async getCateList() {
       const { data: res } = await this.$axios.get("categories");
-      this.cateList = res.data.slice(0, 8); //标签先只要一部分，顶端栏放不下了。
+      this.cateList = res.data.slice(0, 7); //标签先只要一部分，顶端栏放不下了。
     },
   },
 };
