@@ -3,6 +3,7 @@
     <v-card
       v-for=" i in articleList"
       :key="i.ID"
+      link
     >
       <v-row class="mb-6 mt-2">
         <v-col
@@ -43,8 +44,9 @@
     <div class="text-center">
       <v-pagination
         v-model="page"
-        :length="currentPageNum"
+        :length="Math.ceil(total/queryParam.pagesize)"
         circle
+        @input="getArtList"
       ></v-pagination>
     </div>
   </v-col>
@@ -85,14 +87,6 @@ export default {
 
       console.log(this.total);
       // console.table(res);
-    },
-  },
-  computed: {
-    //返回当前应该有多少页
-    currentPageNum() {
-      return this.total % this.queryParam.pagesize == 0
-        ? this.total / this.queryParam.pagesize
-        : this.total / this.queryParam.pagesize + 1; //有余数，分页器加 1 页
     },
   },
   filters: {
