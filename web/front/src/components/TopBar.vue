@@ -9,7 +9,7 @@
         size="43"
       ></v-avatar>
       <!--见文档 样式与动画-间距-->
-      <v-container class="py-2 fill-height">
+      <v-container class="py-2 fill-height justify-center">
         <v-btn
           text
           color="white"

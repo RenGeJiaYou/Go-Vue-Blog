@@ -15,8 +15,8 @@
           <v-col>
             <v-sheet
               rounded="lg"
-              elevation="5"
-              min-height="85vh"
+              elevation="2"
+              max-width="85vh"
             >
               <!-- vh is view-height -->
               <router-view></router-view>

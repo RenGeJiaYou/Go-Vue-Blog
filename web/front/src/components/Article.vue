@@ -1,9 +1,10 @@
 <template>
-  <v-col class="grey lighten-4">
+  <v-col>
     <v-card
       v-for=" i in articleList"
       :key="i.ID"
       link
+      @click="$router.push(`details/${i.ID}`)"
     >
       <v-row class="mb-6 mt-2">
         <v-col
@@ -36,14 +37,15 @@
             inset
             light
           ></v-divider>
-          <v-card-text>{{i.content}}</v-card-text>
+          <v-card-text v-html="i.content.slice(0,100)"></v-card-text>
         </v-col>
       </v-row>
     </v-card>
 
     <div class="text-center">
       <v-pagination
-        v-model="page"
+        total-visible="7"
+        v-model="queryParam.pagenum"
         :length="Math.ceil(total/queryParam.pagesize)"
         circle
         @input="getArtList"

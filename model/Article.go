@@ -28,7 +28,7 @@ func CreateArt(art *Article) int {
 	return errmsg.SUCCESS
 }
 
-// GetCateArt todo 查询某个分类下所有文章
+// GetCateArt
 func GetCateArt(cid int, pageSize int, pageNum int) ([]Article, int, int64) {
 	var cateArt []Article
 	var total int64
@@ -37,7 +37,7 @@ func GetCateArt(cid int, pageSize int, pageNum int) ([]Article, int, int64) {
 		Where("cid = ?", cid).
 		Find(&cateArt).
 		Limit(pageSize).
-		Offset((pageNum-1)*pageSize).
+		Offset((pageNum - 1) * pageSize).
 		Error
 
 	//记录总数。Model() 不仅仅能传已经定义好的go struct 对象，也包括某次查询的视图
@@ -80,11 +80,11 @@ func GetArts(title string, pageSize int, pageNum int) ([]Article, int, int64) {
 	if title == "" {
 		// 非搜索分支
 		err = db.
-			Order("Created_At DESC").
-			Preload("Category").
-			Find(&articles).
 			Limit(pageSize).
-			Offset((pageNum - 1) * pageSize).Error
+			Offset((pageNum - 1) * pageSize).
+			Order("Created_At DESC").
+			Joins("Category").
+			Find(&articles).Error
 		db.Model(&articles).Count(&total)
 	} else {
 		// 搜索分支

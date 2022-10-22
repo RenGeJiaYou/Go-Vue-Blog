@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Article from "../components/Article.vue";
+import Details from "../components/Details.vue";
 
 Vue.use(VueRouter);
 
@@ -15,6 +16,12 @@ const routes = [
         path: "/",
         component: Article,
         meta: { title: "Welcome to Go Vue Blog !" },
+      },
+      {
+        path: "/details/:id", //:id 作为key,实际传入的文章 ID 作为value 组成一个k-v.可在子组件中通过props:['id']获得，并像一个data那样用
+        component: Details,
+        meta: { title: "文章详情" },
+        props: true,
       },
     ],
   },
