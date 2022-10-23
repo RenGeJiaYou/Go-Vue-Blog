@@ -27,10 +27,10 @@ func AddArt(c *gin.Context) {
 
 }
 
-// GetCateArt todo 查询某个分类下所有文章
+// GetCateArt  查询某个分类下所有文章
 func GetCateArt(c *gin.Context) {
 	//从请求报文的 params 提取数据
-	cid, _ := strconv.Atoi(c.Param("cid"))			// 巩固Param() 和 Query() 的区别
+	cid, _ := strconv.Atoi(c.Param("cid")) // 巩固Param() 和 Query() 的区别
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
 	pageNum, _ := strconv.Atoi(c.Query("pagenum"))
 	fmt.Println(cid, pageSize, pageNum)
@@ -51,7 +51,7 @@ func GetCateArt(c *gin.Context) {
 	})
 }
 
-// GetArt 查询单个文章 todo 按标题查
+// GetArt 查询单个文章
 func GetArt(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	art, code := model.GetArt(id)
@@ -68,6 +68,7 @@ func GetArts(c *gin.Context) {
 	//从请求报文的 params 提取数据
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
 	pageNum, _ := strconv.Atoi(c.Query("pagenum"))
+	title := c.Query("title")
 
 	if pageSize == 0 {
 		pageSize = -1 //GORM 的Limit(-1) 表示不要 Limit() 这个限制
@@ -75,9 +76,9 @@ func GetArts(c *gin.Context) {
 	if pageNum == 0 {
 		pageNum = 1 //GORM 的Offset((1-1)*pageSize) 表示不要 Offset() 这个限制
 	}
-
+	//fmt.Println(pageSize, pageNum)
 	//查询数据库
-	arts, code, total := model.GetArts(pageSize, pageNum)
+	arts, code, total := model.GetArts(title, pageSize, pageNum)
 
 	//返回数据
 	c.JSON(http.StatusOK, gin.H{
@@ -101,8 +102,8 @@ func EditArt(c *gin.Context) {
 	code := model.EditArt(&art, id)
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": code,
-		"msg":    errmsg.GetErrMsg(code),
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
 	})
 }
 
@@ -112,8 +113,8 @@ func DeleteArt(c *gin.Context) {
 	code := model.DeleteArt(id)
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": code,
-		"msg":    errmsg.GetErrMsg(code),
-		"delete": "i am delete",
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+		"delete":  "i am delete",
 	})
 }

@@ -47,20 +47,32 @@ func CreateCate(cate *Category) int { // Go 的 struct 是引用类型，作为�
 // Params pageNum int	当前的页码
 // Return []User		标签列表
 // Return int64			标签数量
-func GetCategories(pageSize int, pageNum int) ([]Category, int64) {
+func GetCategories(name string, pageSize int, pageNum int) ([]Category, int64) {
 	var cas []Category
 	var total int64
-	err := db.
-		Find(&cas).
-		Count(&total).
-		Limit(pageSize).
-		Offset((pageNum - 1) * pageSize).Error
+	var err error
+
+	if name == "" {
+		err = db.
+			Find(&cas).
+			Count(&total).
+			Limit(pageSize).
+			Offset((pageNum - 1) * pageSize).Error
+	} else {
+		err = db.
+			Where("name LIKE ?", name+"%").
+			Find(&cas).
+			Count(&total).
+			Limit(pageSize).
+			Offset((pageNum - 1) * pageSize).Error
+
+	}
+
 	if err != nil {
 		fmt.Println("查找标签列表失败： ", err)
 		return nil, 0
 	}
 	return cas, total
-
 }
 
 // EditCate 修改标签
@@ -68,10 +80,10 @@ func EditCate(cate *Category, id int) int {
 	//使用map方式,因为 struct 无法更新零值
 	var maps = make(map[string]interface{})
 	maps["name"] = cate.Name
-	fmt.Println(maps["name"], id)
+
 	err := db.
 		Model(&cate).
-		Where("id = ?", id).	//Where() 应该在 Update()前面，否则报错“无Where()条件 ”
+		Where("id = ?", id). //Where() 应该在 Update()前面，否则报错“无Where()条件 ”
 		Updates(maps).
 		Error
 

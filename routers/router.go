@@ -18,11 +18,22 @@ func InitRouter() {
 	r.Use(gin.Recovery())
 	r.Use(middleware.Cors())
 
+	//前端资源托管(pattern 参数 从项目根目录开始)
+	r.LoadHTMLGlob("static/admin/index.html")
+	//第1个参数是路由的路径，第2个参数是文件的路径
+	r.Static("admin/static","static/admin/static")
+	//在浏览器地址栏输入localhost:<socket>/admin 即可访问Vue Router设置 path 为 '/' 的 component
+	r.GET("admin", func(c *gin.Context) {
+		c.HTML(200,"index.html",nil)
+
+	})
+
 	auth := r.Group("api/v1")
 	auth.Use(middleware.JwtToken())
 	{
 		//user 的路由接口
-		auth.PUT("user/:id", v1.EditUser)
+		auth.PUT("user/:id", v1.EditUser) //:id 意为 前端axios会把“user/”后面的任何一个数据视为c.Param 的一个键值对，并且 key 为id，value为实际的数据（实际传入该数据时不用加":")
+		auth.PUT("user/resetpw/:id", v1.ResetPass)
 		auth.DELETE("user/:id", v1.DeleteUser)
 
 		//article 的路由接口
@@ -43,6 +54,7 @@ func InitRouter() {
 	{
 		//user 的路由接口
 		router.GET("users", v1.GetUsers)
+		router.GET("user/:id", v1.GetUserInfo)
 		router.POST("user/add", v1.AddUser)
 
 		//article 的路由接口

@@ -21,3 +21,17 @@ log/
 # vendor/
 
 *.log
+
+web/admin/.yarn/cache/
+
+web/admin/.yarn/
+web/admin/.editorconfig
+
+web/admin/.browserslistrc
+web/admin/.eslintrc.js
+web/admin/node_modules/
+web/admin/dist/
+web/admin/.vscode/
+static/
+web/admin/babel.config.js
+web/front/node_modules/

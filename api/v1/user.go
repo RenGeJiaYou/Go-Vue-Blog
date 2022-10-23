@@ -41,13 +41,30 @@ func AddUser(c *gin.Context) {
 
 }
 
-//查询单个用户（在 Blog 系统中用处不大）
+// 查询单个用户（在 Blog 系统中用于编辑指定用户）
+func GetUserInfo(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id < 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  errmsg.ERROR_USER_NOT_EXIST,
+			"message": errmsg.GetErrMsg(errmsg.ERROR_USER_NOT_EXIST),
+		})
+	}
+	user, code := model.GetUser(id)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"data":    user,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
 
 // GetUsers 查询用户列表
 func GetUsers(c *gin.Context) {
 	//从请求报文的 params 提取数据
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
 	pageNum, _ := strconv.Atoi(c.Query("pagenum"))
+	username := c.Query("username")
 
 	if pageSize == 0 {
 		pageSize = -1 //GORM 的Limit(-1) 表示不要 Limit() 这个限制
@@ -57,7 +74,7 @@ func GetUsers(c *gin.Context) {
 	}
 
 	//查询数据库
-	users, total := model.GetUsers(pageSize, pageNum)
+	users, total := model.GetUsers(username, pageSize, pageNum)
 
 	//返回数据
 	c.JSON(http.StatusOK, gin.H{
@@ -74,7 +91,7 @@ func EditUser(c *gin.Context) {
 
 	var user model.User
 	c.ShouldBindJSON(&user)
-	code := model.CheckUser(user.Username)
+	code := model.CheckUpdateUser(id, user.Username)
 
 	if code == errmsg.SUCCESS {
 		model.EditUser(&user, id) //实际上只能改 username 和 role
@@ -86,8 +103,23 @@ func EditUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": code,
-		"msg":    errmsg.GetErrMsg(code),
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
+
+// ResetPass 重置用户密码
+func ResetPass(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var user model.User
+
+	c.ShouldBindJSON(&user)
+
+	code := model.ResetPass(id, &user)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
 	})
 }
 
@@ -97,8 +129,8 @@ func DeleteUser(c *gin.Context) {
 	code := model.DeleteUser(id)
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": code,
-		"msg":    errmsg.GetErrMsg(code),
-		"delete": "i am delete",
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+		"delete":  "i am delete",
 	})
 }

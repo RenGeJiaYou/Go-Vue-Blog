@@ -1,0 +1,15 @@
+html,body,#app{
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+/*解析后实际承载内容的卡片，位于<content>内 */
+.ant-card{
+    margin: 10px;
+    background: white;
+    border-radius: 10px;
+}
+/*解析后实际的表单元素*/
+.ant-table{
+margin-top: 20px;
+}

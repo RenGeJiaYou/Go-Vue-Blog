@@ -32,7 +32,23 @@ func CheckUser(name string) int {
 		return errmsg.ERROR_USERNAME_USED
 	}
 	return errmsg.SUCCESS
+}
 
+// CheckUpdateUser 更新用户时重名检测，防止更名为其它已存在的用户名
+// Params id uint		待更新 User 对象的id
+// Params name string	待更新 User 对象的新用户名
+// Return code int		一个状态码，表示正确或错误
+func CheckUpdateUser(id int, name string) int {
+	var u User //作用：1.规定从哪个表查询  2.将查询结果灌注到该对象中
+	db.
+		Select("id,username").
+		Where("username = ?", name).
+		First(&u) //字段名全部是小写
+	if u.ID == uint(id) || u.ID <= 0 {
+		//说明本次更新没有修改用户名 || 更新的用户名未被占用
+		return errmsg.SUCCESS
+	}
+	return errmsg.ERROR_USERNAME_USED
 }
 
 // CreateUser 向数据库添加用户
@@ -47,20 +63,50 @@ func CreateUser(user *User) int { // Go 的 struct 是引用类型，作为参�
 	return errmsg.SUCCESS
 }
 
+// GetUser 获取单个用户
+// Params id int	搜索所需的用户ID
+// Return u User	所查找的用户
+func GetUser(id int) (User, int) {
+	var u User
+
+	/*SELECT * FROM user WHERE ID= id*/
+	err := db.Limit(1).Where("id = ?", id).Find(&u).Error
+
+	if err != nil {
+		return u, errmsg.ERROR_USER_NOT_EXIST
+	}
+	return u, errmsg.SUCCESS
+}
+
 // GetUsers 获取用户列表
-// Params pageSize int	一页的数量
-// Params pageNum int	当前的页码
-// Return []User		用户列表
-// Return int64			用户数量
-func GetUsers(pageSize int, pageNum int) ([]User, int64) {
+// Params username string	搜索所需的用户名
+// Params pageSize int		一页的数量
+// Params pageNum int		当前的页码
+// Return []User			用户列表
+// Return int64				用户数量
+func GetUsers(username string, pageSize int, pageNum int) ([]User, int64) {
+	var user User
 	var users []User
 	var total int64
-	err := db.
-		Find(&users).
-		Count(&total).
-		Limit(pageSize).
-		Offset((pageNum - 1) * pageSize).Error
-	if err != nil {
+	var err error
+	if username == "" {
+		//非搜索行为
+		err = db.
+			Find(&users).
+			Limit(pageSize).
+			Offset((pageNum - 1) * pageSize).Error
+		db.Model(&user).Count(&total)
+	} else {
+		//搜索行为（Count()要在 Limit()/Offset() 之前，否则报错）
+		err = db.
+			Where("username LIKE ?", username+"%").
+			Find(&users).
+			Count(&total).
+			Limit(pageSize).
+			Offset((pageNum - 1) * pageSize).Error
+	}
+
+	if err == gorm.ErrRecordNotFound {
 		fmt.Println("查找用户列表失败： ", err)
 		return nil, 0
 	}
@@ -81,6 +127,20 @@ func EditUser(user *User, id int) int {
 		Error
 	if err != nil {
 		return errmsg.ERROR
+	}
+	return errmsg.SUCCESS
+}
+
+// ResetPass 重置用户密码
+func ResetPass(id int, u *User) int {
+	/*原生SQL:
+	UPDATE user set password = hashedPassword
+	WHERE ID = id
+	*/
+	EncryptedPassword := ScryptPw(u.Password)
+	err := db.Model(&u).Where("id = ?", id).Update("password", EncryptedPassword).Error
+	if err != nil {
+		return errmsg.ERROR_PASSWORD_WRONG
 	}
 	return errmsg.SUCCESS
 }
@@ -115,9 +175,10 @@ func ScryptPw(password string) string {
 	return base64.StdEncoding.EncodeToString(HashPw)
 }
 
-// BeforeSave 钩子函数，在数据存入数据库前哈希密码
+// BeforeSave 钩子函数，在数据存入数据库前哈希密码 & 权限控制
 func (u *User) BeforeSave(_ *gorm.DB) error {
 	u.Password = ScryptPw(u.Password)
+	u.Role = 2
 	return nil
 }
 
