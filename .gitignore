@@ -31,3 +31,9 @@ web/admin/.editorconfig
 web/admin/.browserslistrc
 
 web/admin/.eslintrc.js
+
+web/admin/node_modules/
+
+web/admin/dist/
+
+web/admin/.vscode/
