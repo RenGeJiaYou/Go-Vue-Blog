@@ -12,11 +12,10 @@
           >
             <Nav></Nav>
           </v-col>
-          <v-col>
+          <v-col cols="9">
             <v-sheet
               rounded="lg"
               elevation="2"
-              max-width="85vh"
             >
               <!-- vh is view-height -->
               <router-view></router-view>

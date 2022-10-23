@@ -13,7 +13,7 @@
 
     <!-- 绑定的数据(string 类型)会被看做 html文档而被解析 -->
     <div
-      class="ma-5 pa-3 text-justify"
+      class="content ma-5 pa-3 text-justify"
       v-html="artInfo.content"
     ></div>
   </div>
@@ -43,6 +43,12 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.content >>> img,
+span,
+p,
+pre {
+  width: 100%;
+}
 </style>
 

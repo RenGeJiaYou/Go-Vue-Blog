@@ -95,6 +95,15 @@ export default {
     dateFilter: function (value) {
       //先将字符串转换为 Date 的对象
       let dateValue = new Date(value);
+      let hours = dateValue.getHours();
+      let minutes = dateValue.getMinutes();
+
+      if (dateValue.getHours() < 10) {
+        hours = "0" + dateValue.getHours();
+      }
+      if (dateValue.getMinutes() < 10) {
+        minutes = "0" + dateValue.getMinutes();
+      }
       return (
         dateValue.getFullYear() +
         "年" +
@@ -103,9 +112,9 @@ export default {
         dateValue.getDate() +
         "日" +
         "  " +
-        dateValue.getHours() +
+        hours +
         ":" +
-        dateValue.getMinutes()
+        minutes
       );
     },
   },
