@@ -37,3 +37,7 @@ web/admin/node_modules/
 web/admin/dist/
 
 web/admin/.vscode/
+
+static/
+
+web/admin/babel.config.js
