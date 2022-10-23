@@ -76,7 +76,7 @@ func GetArts(c *gin.Context) {
 	if pageNum == 0 {
 		pageNum = 1 //GORM 的Offset((1-1)*pageSize) 表示不要 Offset() 这个限制
 	}
-	fmt.Println(pageSize, pageNum)
+	//fmt.Println(pageSize, pageNum)
 	//查询数据库
 	arts, code, total := model.GetArts(title, pageSize, pageNum)
 
