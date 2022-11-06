@@ -6,9 +6,11 @@
       <a-layout-header class="headerBtn">
         <Header></Header>
       </a-layout-header>
+
       <a-layout-content>
         <router-view :key="$route.path"></router-view>
       </a-layout-content>
+
       <a-layout-footer class="footerContainer">
         <Footer></Footer>
       </a-layout-footer>

@@ -28,7 +28,7 @@ func CreateArt(art *Article) int {
 	return errmsg.SUCCESS
 }
 
-// GetCateArt
+// GetCateArt 获取指定分类下的文章
 func GetCateArt(cid int, pageSize int, pageNum int) ([]Article, int, int64) {
 	var cateArt []Article
 	var total int64

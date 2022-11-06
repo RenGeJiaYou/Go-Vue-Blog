@@ -21,10 +21,10 @@ func InitRouter() {
 	//前端资源托管(pattern 参数 从项目根目录开始)
 	r.LoadHTMLGlob("static/admin/index.html")
 	//第1个参数是路由的路径，第2个参数是文件的路径
-	r.Static("admin/static","static/admin/static")
+	r.Static("admin/static", "static/admin/static")
 	//在浏览器地址栏输入localhost:<socket>/admin 即可访问Vue Router设置 path 为 '/' 的 component
 	r.GET("admin", func(c *gin.Context) {
-		c.HTML(200,"index.html",nil)
+		c.HTML(200, "index.html", nil)
 
 	})
 
@@ -48,6 +48,9 @@ func InitRouter() {
 
 		//文件上传的路由接口
 		auth.POST("upload", v1.Upload)
+
+		//修改个人简介的接口
+		auth.PUT("profile/:id", v1.UpdateProfile)
 	}
 
 	router := r.Group("api/v1")
@@ -67,6 +70,9 @@ func InitRouter() {
 
 		//登录的接口
 		router.POST("login", v1.CheckLogin)
+
+		//获取个人简介的接口
+		router.GET("profile/:id", v1.GetProfile)
 	}
 
 	err := r.Run(utils.HttpPort)

@@ -48,7 +48,7 @@ func InitDB() {
 	mysqlDB.SetConnMaxLifetime(10 * time.Second) //设置连接的最长时间,到时则断开
 
 	//自动迁移
-	err := db.AutoMigrate(&User{}, &Category{}, &Article{})
+	err := db.AutoMigrate(&User{}, &Category{}, &Article{}, &Profile{})
 	if err != nil {
 		fmt.Println(err)
 	}
