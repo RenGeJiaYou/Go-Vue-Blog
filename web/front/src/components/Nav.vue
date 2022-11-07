@@ -14,7 +14,7 @@
           >
             <img src="@/assets/img/avatar.jpg" />
           </v-avatar>
-          <div class="ma-4 white--text">Joey</div>
+          <div class="ma-4 white--text">{{profile.name}}</div>
         </v-col>
       </v-card-title>
 
@@ -23,8 +23,8 @@
       <!-- text 展示个人介绍 -->
       <v-col class="au">
         <div class="ma-3">关于作者:</div>
-        <div class="ma-3">电子信息研究生在读</div>
-        <div class="ma-3">一名 Java、Go、JS 开发者，对任何新技术永远抱有热情与求知欲</div>
+        <div class="ma-3">{{profile.state}}</div>
+        <div class="ma-3">{{profile.desc}}</div>
       </v-col>
 
       <v-divider></v-divider>
@@ -38,26 +38,28 @@
           <v-list-item-icon>
             <v-icon>{{'mdi-qqchat'}}</v-icon>
           </v-list-item-icon>
-          <v-list-item-content class="grey-text">123456789</v-list-item-content>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-icon>
-            <v-icon>{{'mdi-sina-weibo'}}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content class="grey-text">123456789</v-list-item-content>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-icon>
-            <v-icon>{{'mdi-email'}}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content class="grey-text">123456789@outlook.com</v-list-item-content>
+          <v-list-item-content class="grey-text">{{profile.qqchat}}</v-list-item-content>
         </v-list-item>
 
         <v-list-item>
           <v-list-item-icon>
-            <v-icon>{{'mdi-github'}}</v-icon>
+            <v-icon>{{'mdi-wechat'}}</v-icon>
           </v-list-item-icon>
           <v-list-item-content class="grey-text">123456789</v-list-item-content>
+        </v-list-item>
+
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>{{'mdi-sina-weibo'}}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content class="grey-text">{{profile.weibo}}</v-list-item-content>
+        </v-list-item>
+
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>{{'mdi-email'}}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content class="grey-text">{{profile.email}}</v-list-item-content>
         </v-list-item>
       </v-list>
     </v-img>
@@ -68,7 +70,22 @@
 export default {
   name: "NavBar",
   data() {
-    return {};
+    return {
+      profile: {},
+    };
+  },
+  created() {
+    this.getProfile();
+  },
+  methods: {
+    async getProfile(param) {
+      // if (id == null || id == undefined || id <= 0) id = 1; //使用 ?? 简化空值判断
+      let id = param ?? 1;
+
+      const { data: res } = await this.$axios.get(`/profile/${id}`);
+      this.profile = res.data;
+      console.log(this.profile);
+    },
   },
 };
 </script>
