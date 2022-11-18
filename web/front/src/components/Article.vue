@@ -88,7 +88,6 @@ export default {
       this.total = res.total;
 
       console.log(this.total);
-      // console.table(res);
     },
   },
   filters: {

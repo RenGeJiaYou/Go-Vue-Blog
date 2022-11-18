@@ -12,7 +12,7 @@
             size="100"
             color="grey"
           >
-            <img src="@/assets/img/avatar.jpg" />
+            <img :src="profile.avatar" />
           </v-avatar>
           <div class="ma-4 white--text">{{profile.name}}</div>
         </v-col>
