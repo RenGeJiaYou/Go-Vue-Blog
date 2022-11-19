@@ -22,9 +22,6 @@ log/
 
 *.log
 
-web/admin/.yarn/cache/
-
-web/admin/.yarn/
 web/admin/.editorconfig
 
 web/admin/.browserslistrc
@@ -35,3 +32,11 @@ web/admin/.vscode/
 static/
 web/admin/babel.config.js
 web/front/node_modules/
+
+/node_modules
+/.pnp
+.pnp.js
+.pnp.cjs
+web/admin/.yarn/cache
+web/admin/.yarn/unplugged
+web/admin/.yarn/install-state.gz

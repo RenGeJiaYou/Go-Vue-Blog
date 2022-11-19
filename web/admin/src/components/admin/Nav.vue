@@ -31,7 +31,7 @@
           <span>写文章</span>
         </a-menu-item>
         <a-menu-item key="artlist">
-          <a-icon type="profile" />
+          <a-icon type="snippets" />
           <span>文章列表</span>
         </a-menu-item>
       </a-sub-menu>
@@ -44,6 +44,11 @@
       <a-menu-item key="userlist">
         <a-icon type="user" />
         <span>用户列表</span>
+      </a-menu-item>
+
+      <a-menu-item key="profile">
+        <a-icon type="setting" />
+        <span>个人设置</span>
       </a-menu-item>
     </a-menu>
   </a-layout-sider>

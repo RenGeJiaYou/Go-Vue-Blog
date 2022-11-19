@@ -5,7 +5,7 @@ import {
   FormModel,
   Input,
   Icon,
-  Message,
+  message,
   Layout,
   Menu,
   Card,
@@ -19,12 +19,12 @@ import {
 } from "ant-design-vue";
 
 //不全局使用，只是挂载到对象上
-Message.config({
+message.config({
   top: `40px`,
   duration: 2,
   maxCount: 3,
 });
-Vue.prototype.$message = Message;
+Vue.prototype.$message = message;
 Vue.prototype.$confirm = Modal.confirm; //加()就执行了
 
 //插件通常用来为 Vue 添加全局功能，可以通过全局方法 Vue.use() 使用插件，
